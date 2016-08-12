@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { t } from '../../util/locale';
 import { nominatim as nominatimService } from '../../services/index';
 import { phoneFormats } from '../../../data/index';

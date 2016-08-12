@@ -1,4 +1,6 @@
-d3.combobox = function() {
+import * as d3 from 'd3';
+
+export function d3combobox() {
     var event = d3.dispatch('accept'),
         data = [],
         suggestions = [],
@@ -283,7 +285,7 @@ d3.combobox = function() {
     return d3.rebind(combobox, event, 'on');
 };
 
-d3.combobox.off = function(input) {
+d3combobox.off = function(input) {
     input
         .on('focus.typeahead', null)
         .on('blur.typeahead', null)
@@ -298,4 +300,4 @@ d3.combobox.off = function(input) {
 
     d3.select(document.body)
         .on('scroll.combobox', null);
-};
+}

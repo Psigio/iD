@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { t } from '../util/locale';
 import _ from 'lodash';
 import { AddMidpoint, Connect, MoveNode, Noop } from '../actions/index';

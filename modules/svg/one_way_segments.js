@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { euclideanDistance } from '../geo/index';
 
 export function OneWaySegments(projection, graph, dt) {
@@ -14,7 +15,7 @@ export function OneWaySegments(projection, graph, dt) {
 
         if (entity.tags.oneway === '-1') coordinates.reverse();
 
-        d3.geo.stream({
+        d3.geoStream({
             type: 'LineString',
             coordinates: coordinates
         }, projection.stream(clip({

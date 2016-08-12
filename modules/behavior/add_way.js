@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { Browse } from '../modes/index';
 import { Draw } from './draw';
 

@@ -1,3 +1,5 @@
+import { d3combobox } from '../../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 import { t } from '../../util/locale';
 import { tooltip } from '../../util/tooltip';
 import _ from 'lodash';
@@ -25,7 +27,7 @@ export function localized(field, context) {
 
         if (field.id === 'name') {
             var preset = context.presets().match(entity, context.graph());
-            input.call(d3.combobox().fetcher(
+            input.call(d3combobox().fetcher(
                 SuggestNames(preset, suggestions)
             ));
         }
@@ -137,7 +139,7 @@ export function localized(field, context) {
         innerWrap.attr('class', 'entry')
             .each(function() {
                 var wrap = d3.select(this);
-                var langcombo = d3.combobox().fetcher(fetcher).minItems(0);
+                var langcombo = d3combobox().fetcher(fetcher).minItems(0);
 
                 var label = wrap.append('label')
                     .attr('class','form-label')

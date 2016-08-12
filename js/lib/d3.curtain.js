@@ -1,5 +1,7 @@
+import * as d3 from 'd3';
+
 // Tooltips and svg mask used to highlight certain features
-d3.curtain = function() {
+export function d3curtain() {
 
     var event = d3.dispatch(),
         surface,

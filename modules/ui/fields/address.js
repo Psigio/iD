@@ -1,3 +1,5 @@
+import { d3combobox } from '../../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 import _ from 'lodash';
 import { Extent, chooseEdge, sphericalDistance } from '../../geo/index';
 import { nominatim } from '../../services/index';
@@ -150,19 +152,19 @@ export function address(field, context) {
             // Update
 
             wrap.selectAll('.addr-street')
-                .call(d3.combobox()
+                .call(d3combobox()
                     .fetcher(function(value, callback) {
                         callback(getStreets());
                     }));
 
             wrap.selectAll('.addr-city')
-                .call(d3.combobox()
+                .call(d3combobox()
                     .fetcher(function(value, callback) {
                         callback(getCities());
                     }));
 
             wrap.selectAll('.addr-postcode')
-                .call(d3.combobox()
+                .call(d3combobox()
                     .fetcher(function(value, callback) {
                         callback(getPostCodes());
                     }));

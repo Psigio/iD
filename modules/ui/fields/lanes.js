@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 export function lanes(field, context) {
     var dispatch = d3.dispatch('change'),
         LANE_WIDTH = 40,

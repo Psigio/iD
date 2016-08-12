@@ -1,3 +1,5 @@
+import { d3combobox } from '../../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 import _ from 'lodash';
 
 export function access(field) {
@@ -33,7 +35,7 @@ export function access(field) {
             .attr('id', function(d) { return 'preset-input-access-' + d; })
             .each(function(d) {
                 d3.select(this)
-                    .call(d3.combobox()
+                    .call(d3combobox()
                         .data(access.options(d)));
             });
 

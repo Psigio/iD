@@ -1,5 +1,7 @@
+import * as d3 from 'd3';
 /* global Mapillary:false */
 import _ from 'lodash';
+import { d3geoTile } from '../../js/lib/d3.geo.tile';
 import { Detect } from '../util/detect';
 import { Extent } from '../geo/index';
 import { Icon } from '../svg/index';
@@ -134,7 +136,7 @@ function getTiles(projection, dimensions) {
             s / 2 - projection.translate()[0],
             s / 2 - projection.translate()[1]];
 
-    return d3.geo.tile()
+    return d3geoTile()
         .scaleExtent([tileZoom, tileZoom])
         .scale(s)
         .size(dimensions)

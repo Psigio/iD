@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { Toggle } from './toggle';
 
 export function Disclosure() {

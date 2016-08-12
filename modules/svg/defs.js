@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 /*
     A standalone SVG element that contains only a `defs` sub-element. To be
     used once globally, since defs IDs must be unique within a document.

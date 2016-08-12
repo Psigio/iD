@@ -1,3 +1,5 @@
+import { d3combobox } from '../../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 import _ from 'lodash';
 import { pointInPolygon } from '../../geo/index';
 import { imperial as imperialData } from '../../../data/index';
@@ -14,8 +16,8 @@ export function maxspeed(field, context) {
         imperialValues = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
 
     function maxspeed(selection) {
-        combobox = d3.combobox();
-        var unitCombobox = d3.combobox().data(['km/h', 'mph'].map(comboValues));
+        combobox = d3combobox();
+        var unitCombobox = d3combobox().data(['km/h', 'mph'].map(comboValues));
 
         input = selection.selectAll('#preset-input-' + field.id)
             .data([0]);

@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { setTransform } from '../util/index';
 export function Tail() {
     var text,

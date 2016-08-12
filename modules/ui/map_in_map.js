@@ -1,3 +1,5 @@
+import { d3keybinding } from '../../js/lib/d3.keybinding.js';
+import * as d3 from 'd3';
 import { Debug, Gpx } from '../svg/index';
 import { RawMercator } from '../geo/index';
 import { TileLayer } from '../renderer/index';
@@ -12,7 +14,7 @@ export function MapInMap(context) {
             projection = RawMercator(),
             gpxLayer = Gpx(projection, context).showLabels(false),
             debugLayer = Debug(projection, context),
-            zoom = d3.behavior.zoom()
+            zoom = d3.zoom()
                 .scaleExtent([ztok(0.5), ztok(24)])
                 .on('zoom', zoomPan),
             transformed = false,
@@ -212,7 +214,7 @@ export function MapInMap(context) {
 
             // redraw viewport bounding box
             if (!panning) {
-                var getPath = d3.geo.path().projection(projection),
+                var getPath = d3.geoPath().projection(projection),
                     bbox = { type: 'Polygon', coordinates: [context.map().extent().polygon()] };
 
                 viewport = wrap.selectAll('.map-in-map-viewport')
@@ -294,7 +296,7 @@ export function MapInMap(context) {
 
         redraw();
 
-        var keybinding = d3.keybinding('map-in-map')
+        var keybinding = d3keybinding('map-in-map')
             .on(key, toggle);
 
         d3.select(document)

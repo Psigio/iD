@@ -1,3 +1,5 @@
+import { d3combobox } from '../../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 export function cycleway(field) {
     var dispatch = d3.dispatch('change'),
         items;
@@ -31,7 +33,7 @@ export function cycleway(field) {
             .attr('id', function(d) { return 'preset-input-cycleway-' + d; })
             .each(function(d) {
                 d3.select(this)
-                    .call(d3.combobox()
+                    .call(d3combobox()
                         .data(cycleway.options(d)));
             });
 

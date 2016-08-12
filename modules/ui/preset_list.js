@@ -1,3 +1,5 @@
+import { d3keybinding } from '../../js/lib/d3.keybinding.js';
+import * as d3 from 'd3';
 import { t } from '../util/locale';
 import { Browse } from '../modes/index';
 import { ChangePreset } from '../actions/index';
@@ -49,14 +51,14 @@ export function PresetList(context) {
         function keydown() {
             // hack to let delete shortcut work when search is autofocused
             if (search.property('value').length === 0 &&
-                (d3.event.keyCode === d3.keybinding.keyCodes['⌫'] ||
-                 d3.event.keyCode === d3.keybinding.keyCodes['⌦'])) {
+                (d3.event.keyCode === d3keybinding.keyCodes['⌫'] ||
+                 d3.event.keyCode === d3keybinding.keyCodes['⌦'])) {
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
                 Delete([id], context)();
             } else if (search.property('value').length === 0 &&
                 (d3.event.ctrlKey || d3.event.metaKey) &&
-                d3.event.keyCode === d3.keybinding.keyCodes.z) {
+                d3.event.keyCode === d3keybinding.keyCodes.z) {
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
                 context.undo();

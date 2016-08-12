@@ -1,3 +1,5 @@
+import { d3combobox } from '../../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 import { t } from '../../util/locale';
 import _ from 'lodash';
 import { ChangeTags } from '../../actions/index';
@@ -16,7 +18,7 @@ export function wikipedia(field, context) {
         link, entity, lang, title;
 
     function wiki(selection) {
-        var langcombo = d3.combobox()
+        var langcombo = d3combobox()
             .fetcher(function(value, cb) {
                 var v = value.toLowerCase();
 
@@ -29,7 +31,7 @@ export function wikipedia(field, context) {
                 }));
             });
 
-        var titlecombo = d3.combobox()
+        var titlecombo = d3combobox()
             .fetcher(function(value, cb) {
 
                 if (!value) value = context.entity(entity.id).tags.name || '';

@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { t, addTranslation, setLocale } from '../util/locale';
 import _ from 'lodash';
 import { Background } from '../renderer/background';

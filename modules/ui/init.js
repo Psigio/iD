@@ -1,3 +1,5 @@
+import { d3keybinding } from '../../js/lib/d3.keybinding.js';
+import * as d3 from 'd3';
 import { t } from '../util/locale';
 import { tooltip } from '../util/tooltip';
 import { Defs, Icon } from '../svg/index';
@@ -209,7 +211,7 @@ export function init(context) {
         // pan amount
         var pa = 10;
 
-        var keybinding = d3.keybinding('main')
+        var keybinding = d3keybinding('main')
             .on('⌫', function() { d3.event.preventDefault(); })
             .on('←', pan([pa, 0]))
             .on('↑', pan([0, pa]))

@@ -1,3 +1,5 @@
+import { d3combobox } from '../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 import { t } from '../util/locale';
 import { tooltip } from '../util/tooltip';
 import _ from 'lodash';
@@ -88,7 +90,7 @@ export function Commit(context) {
                 }
             }
 
-            commentField.call(d3.combobox().caseSensitive(true).data(comments));
+            commentField.call(d3combobox().caseSensitive(true).data(comments));
         });
 
         var clippyArea = commentSection.append('div')

@@ -1,3 +1,5 @@
+import { d3keybinding } from '../../js/lib/d3.keybinding.js';
+import * as d3 from 'd3';
 import { t } from '../util/locale';
 import { Browse, Select } from './index';
 import { Move as MoveAction, Noop } from '../actions/index';
@@ -9,7 +11,7 @@ export function Move(context, entityIDs, baseGraph) {
         button: 'browse'
     };
 
-    var keybinding = d3.keybinding('move'),
+    var keybinding = d3keybinding('move'),
         edit = Edit(context),
         annotation = entityIDs.length === 1 ?
             t('operations.move.annotation.' + context.geometry(entityIDs[0])) :

@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import _ from 'lodash';
 import { Extent, polygonIntersectsPolygon } from '../geo/index';
 import { Detect } from '../util/detect';
@@ -61,7 +62,7 @@ export function Gpx(projection, context, dispatch) {
         paths.exit()
             .remove();
 
-        var path = d3.geo.path()
+        var path = d3.geoPath()
             .projection(projection);
 
         paths
@@ -157,7 +158,7 @@ export function Gpx(projection, context, dispatch) {
             }, []);
 
         if (!polygonIntersectsPolygon(viewport, coords, true)) {
-            var extent = Extent(d3.geo.bounds(geojson));
+            var extent = Extent(d3.geoBounds(geojson));
             map.centerZoom(extent.center(), map.trimmedExtentZoom(extent));
         }
 

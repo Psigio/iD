@@ -1,3 +1,5 @@
+import { d3combobox } from '../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 import { t } from '../util/locale';
 import { Disclosure } from './disclosure';
 import { Icon } from '../svg/index';
@@ -149,7 +151,7 @@ export function RawTagEditor(context) {
                 return sameletter.concat(other);
             }
 
-            key.call(d3.combobox()
+            key.call(d3combobox()
                 .fetcher(function(value, callback) {
                     context.taginfo().keys({
                         debounce: true,
@@ -160,7 +162,7 @@ export function RawTagEditor(context) {
                     });
                 }));
 
-            value.call(d3.combobox()
+            value.call(d3combobox()
                 .fetcher(function(value, callback) {
                     context.taginfo().values({
                         debounce: true,
@@ -177,10 +179,10 @@ export function RawTagEditor(context) {
             var row = d3.select(this);
 
             row.selectAll('input.key')
-                .call(d3.combobox.off);
+                .call(d3combobox.off);
 
             row.selectAll('input.value')
-                .call(d3.combobox.off);
+                .call(d3combobox.off);
         }
 
         function keyChange(d) {
@@ -200,19 +202,19 @@ export function RawTagEditor(context) {
             tag[kNew] = d.value;
             d.key = kNew; // Maintain DOM identity through the subsequent update.
             this.value = kNew;
-            event.change(tag);
+            event.call("change", tag);
         }
 
         function valueChange(d) {
             var tag = {};
             tag[d.key] = this.value;
-            event.change(tag);
+            event.call("change", tag);
         }
 
         function removeTag(d) {
             var tag = {};
             tag[d.key] = undefined;
-            event.change(tag);
+            event.call("change", tag);
             d3.select(this.parentNode).remove();
         }
 

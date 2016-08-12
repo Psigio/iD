@@ -1,3 +1,5 @@
+import { d3combobox } from '../../../js/lib/d3.combobox.js';
+import * as d3 from 'd3';
 import _ from 'lodash';
 
 import { t } from '../../util/locale';
@@ -15,7 +17,7 @@ export function combo(field, context) {
         optstrings = field.strings && field.strings.options,
         optarray = field.options,
         snake_case = (field.snake_case || (field.snake_case === undefined)),
-        combobox = d3.combobox().minItems(isMulti ? 1 : 2),
+        combobox = d3combobox().minItems(isMulti ? 1 : 2),
         comboData = [],
         multiData = [],
         container,

@@ -1,15 +1,16 @@
+import * as d3 from 'd3';
 import { t } from '../util/locale';
 import _ from 'lodash';
 import { Areas, Labels, Layers, Lines, Midpoints, Points, Vertices } from '../svg/index';
 import { Extent, interp } from '../geo/index';
-import { fastMouse, setTransform } from '../util/index';
+import { fastMouse, setTransform, functor } from '../util/index';
 import { flash } from '../ui/index';
 
 export function Map(context) {
     var dimensions = [1, 1],
         dispatch = d3.dispatch('move', 'drawn'),
         projection = context.projection,
-        zoom = d3.behavior.zoom()
+        zoom = d3.zoom()
             .translate(projection.translate())
             .scale(projection.scale() * 2 * Math.PI)
             .scaleExtent([1024, 256 * Math.pow(2, 24)])
@@ -102,7 +103,7 @@ export function Map(context) {
         context.on('enter.map', function() {
             if (map.editable() && !transformed) {
                 var all = context.intersects(map.extent()),
-                    filter = d3.functor(true),
+                    filter = functor(true),
                     graph = context.graph();
 
                 all = context.features().filter(all, graph);
@@ -148,7 +149,7 @@ export function Map(context) {
 
             } else {
                 data = all;
-                filter = d3.functor(true);
+                filter = functor(true);
             }
         }
 
@@ -443,7 +444,7 @@ export function Map(context) {
         var t1 = Date.now(),
             t2 = t1 + duration,
             loc1 = map.center(),
-            ease = d3.ease('cubic-in-out');
+            ease = d3.easeCubicInOut;
 
         easing = true;
 
@@ -459,10 +460,11 @@ export function Map(context) {
             var locNow = interp(loc1, loc2, ease((tNow - t1) / duration));
             setCenter(locNow);
 
-            d3.event = {
-                scale: zoom.scale(),
-                translate: zoom.translate()
-            };
+            // TODO: fix
+            // d3.event = {
+            //     scale: zoom.scale(),
+            //     translate: zoom.translate()
+            // };
 
             zoomPan();
             return !easing;
