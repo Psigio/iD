@@ -1,3 +1,4 @@
+import { rebind } from '../../util/rebind';
 import * as d3 from 'd3';
 import { t } from '../../util/locale';
 import { nominatim as nominatimService } from '../../services/index';
@@ -92,5 +93,5 @@ export function url(field, context) {
         if (node) node.focus();
     };
 
-    return d3.rebind(i, dispatch, 'on');
+    return rebind(i, dispatch, 'on');
 }

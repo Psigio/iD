@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import { Browse } from '../modes/index';
 import { Draw } from './draw';
@@ -36,5 +37,5 @@ export function AddWay(context) {
         return addWay;
     };
 
-    return d3.rebind(addWay, event, 'on');
+    return rebind(addWay, event, 'on');
 }

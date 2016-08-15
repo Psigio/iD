@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import { d3keybinding } from '../../js/lib/d3.keybinding.js';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
@@ -264,5 +265,5 @@ export function PresetList(context) {
         return presetList;
     };
 
-    return d3.rebind(presetList, dispatch, 'on');
+    return rebind(presetList, dispatch, 'on');
 }

@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
 import { tooltip } from '../util/tooltip';
@@ -246,5 +247,5 @@ export function EntityEditor(context) {
         return entityEditor;
     };
 
-    return d3.rebind(entityEditor, dispatch, 'on');
+    return rebind(entityEditor, dispatch, 'on');
 }

@@ -8,7 +8,7 @@ export function OneWaySegments(projection, graph, dt) {
             i = 0,
             offset = dt,
             segments = [],
-            clip = d3.geo.clipExtent().extent(projection.clipExtent()).stream,
+            clip = d3.geoClipExtent().extent(projection.clipExtent()).stream,
             coordinates = graph.childNodes(entity).map(function(n) {
                 return n.loc;
             });

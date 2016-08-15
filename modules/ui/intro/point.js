@@ -1,3 +1,4 @@
+import { rebind } from '../../util/rebind';
 import * as d3 from 'd3';
 import { t } from '../../util/locale';
 import { icon, pad } from './helper';
@@ -152,5 +153,5 @@ export function point(context, reveal) {
             .on('keydown.intro', null);
     };
 
-    return d3.rebind(step, event, 'on');
+    return rebind(step, event, 'on');
 }

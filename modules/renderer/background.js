@@ -1,3 +1,5 @@
+import { rebind } from '../util/rebind';
+import { setDimensions } from '../util/dimensions';
 import * as d3 from 'd3';
 import _ from 'lodash';
 import { Extent, metersToOffset, offsetToMeters} from '../geo/index';
@@ -113,10 +115,11 @@ export function Background(context) {
     };
 
     background.dimensions = function(_) {
-        baseLayer.dimensions(_);
+        if (!_) return;
+        setDimensions(baseLayer, _);
 
         overlayLayers.forEach(function(layer) {
-            layer.dimensions(_);
+            setDimensions(layer, _);
         });
     };
 
@@ -155,10 +158,9 @@ export function Background(context) {
             }
         }
 
-        layer = TileLayer(context)
+        layer = setDimensions(TileLayer(context)
             .source(d)
-            .projection(context.projection)
-            .dimensions(baseLayer.dimensions());
+            .projection(context.projection), getDimensions(baseLayer));
 
         overlayLayers.push(layer);
         dispatch.change();
@@ -247,5 +249,5 @@ export function Background(context) {
         }
     };
 
-    return d3.rebind(background, dispatch, 'on');
+    return rebind(background, dispatch, 'on');
 }

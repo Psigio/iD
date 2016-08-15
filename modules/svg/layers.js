@@ -1,3 +1,5 @@
+import { rebind } from '../util/rebind';
+import { getDimensions, setDimensions } from '../util/dimensions';
 import * as d3 from 'd3';
 import _ from 'lodash';
 import { Debug } from './debug';
@@ -77,16 +79,14 @@ export function Layers(projection, context) {
     };
 
     drawLayers.dimensions = function(_) {
-        if (!arguments.length) return svg.dimensions();
-        svg.dimensions(_);
+        if (!arguments.length) return getDimensions(svg);
+        setDimensions(svg);
         layers.forEach(function(obj) {
-            if (obj.layer.dimensions) {
-                obj.layer.dimensions(_);
-            }
+            setDimensions(obj.layer.dimensions, _);
         });
         return this;
     };
 
 
-    return d3.rebind(drawLayers, dispatch, 'on');
+    return rebind(drawLayers, dispatch, 'on');
 }

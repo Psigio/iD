@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import _ from 'lodash';
 import * as Validations from '../validations/index';
@@ -410,5 +411,5 @@ export function History(context) {
 
     history.reset();
 
-    return d3.rebind(history, dispatch, 'on');
+    return rebind(history, dispatch, 'on');
 }

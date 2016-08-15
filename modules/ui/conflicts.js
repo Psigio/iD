@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
 import { Extent } from '../geo/index';
@@ -252,5 +253,5 @@ export function Conflicts(context) {
         return conflicts;
     };
 
-    return d3.rebind(conflicts, dispatch, 'on');
+    return rebind(conflicts, dispatch, 'on');
 }

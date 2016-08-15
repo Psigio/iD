@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import _ from 'lodash';
 import { Entity } from '../core/index';
@@ -419,5 +420,5 @@ export function Features(context) {
         return result;
     };
 
-    return d3.rebind(features, dispatch, 'on');
+    return rebind(features, dispatch, 'on');
 }

@@ -1,4 +1,6 @@
+import { rebind } from '../../util/rebind';
 import { functor } from '../../util/index';
+import { getDimensions, setDimensions } from '../../util/dimensions';
 import * as d3 from 'd3';
 import { t } from '../../util/locale';
 import { Extent, Intersection, RawMercator, Turn, inferRestriction } from '../../geo/index';
@@ -39,7 +41,7 @@ export function restrictions(field, context) {
             extent = Extent(),
             projection = RawMercator();
 
-        var d = wrap.dimensions(),
+        var d = getDimensions(wrap),
             c = [d[0] / 2, d[1] / 2],
             z = 24;
 
@@ -52,7 +54,7 @@ export function restrictions(field, context) {
             .translate([c[0] - s[0], c[1] - s[1]])
             .clipExtent([[0, 0], d]);
 
-        var drawLayers = Layers(projection, context).only('osm').dimensions(d),
+        var drawLayers = setDimensions(Layers(projection, context).only('osm'), d),
             drawVertices = Vertices(projection, context),
             drawLines = Lines(projection, context),
             drawTurns = Turns(projection, context);
@@ -65,8 +67,7 @@ export function restrictions(field, context) {
 
         var surface = wrap.selectAll('.surface');
 
-        surface
-            .dimensions(d)
+        setDimensions(surface, d)
             .call(drawVertices, graph, [vertex], filter, extent, z)
             .call(drawLines, graph, intersection.ways, filter)
             .call(drawTurns, graph, intersection.turns(fromNodeID));
@@ -93,7 +94,7 @@ export function restrictions(field, context) {
 
         d3.select(window)
             .on('resize.restrictions', function() {
-                wrap.dimensions(null);
+                setDimensions(wrap, null);
                 render();
             });
 
@@ -178,5 +179,5 @@ export function restrictions(field, context) {
             .on('resize.restrictions', null);
     };
 
-    return d3.rebind(restrictions, dispatch, 'on');
+    return rebind(restrictions, dispatch, 'on');
 }

@@ -1,6 +1,8 @@
+import { rebind } from '../util/rebind';
 import { d3combobox } from '../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
+import { triggerEvent } from '../util/trigger_event';
 import { tooltip } from '../util/tooltip';
 import _ from 'lodash';
 import { displayName, entityOrMemberSelector } from '../util/index';
@@ -280,8 +282,8 @@ export function Commit(context) {
 
         // Call checkComment off the bat, in case a changeset
         // comment is recovered from localStorage
-        commentField.trigger('input');
+        triggerEvent(commentField, 'input');
     }
 
-    return d3.rebind(commit, dispatch, 'on');
+    return rebind(commit, dispatch, 'on');
 }

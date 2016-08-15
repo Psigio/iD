@@ -1,5 +1,8 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
+import { bindOnce } from '../util/bind_once';
+import { getDimensions, setDimensions } from '../util/dimensions';
 import _ from 'lodash';
 import { Areas, Labels, Layers, Lines, Midpoints, Points, Vertices } from '../svg/index';
 import { Extent, interp } from '../geo/index';
@@ -114,7 +117,7 @@ export function Map(context) {
             }
         });
 
-        map.dimensions(selection.dimensions());
+        setDimensions(map, getDimensions(selection));
 
         drawLabels.supersurface(supersurface);
     }
@@ -356,8 +359,8 @@ export function Map(context) {
         if (!arguments.length) return dimensions;
         var center = map.center();
         dimensions = _;
-        drawLayers.dimensions(dimensions);
-        context.background().dimensions(dimensions);
+        setDimensions(drawLayers, dimensions);
+        setDimensions(context.background(), dimensions);
         projection.clipExtent([[0, 0], dimensions]);
         mouse = fastMouse(supersurface.node());
         setCenter(center);
@@ -433,7 +436,7 @@ export function Map(context) {
     map.centerEase = function(loc2, duration) {
         duration = duration || 250;
 
-        surface.one('mousedown.ease', function() {
+        bindOnce(surface, 'mousedown.ease', function() {
             map.cancelEase();
         });
 
@@ -536,5 +539,5 @@ export function Map(context) {
 
     map.layers = drawLayers;
 
-    return d3.rebind(map, dispatch, 'on');
+    return rebind(map, dispatch, 'on');
 }

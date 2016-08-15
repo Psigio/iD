@@ -1,6 +1,7 @@
 import { d3keybinding } from '../../js/lib/d3.keybinding.js';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
+import { getDimensions, setDimensions } from '../util/dimensions';
 import { tooltip } from '../util/tooltip';
 import { Defs, Icon } from '../svg/index';
 import { Account } from './account';
@@ -194,11 +195,11 @@ export function init(context) {
             context.history().unlock();
         };
 
-        var mapDimensions = map.dimensions();
+        var mapDimensions = getDimensions(map);
 
         d3.select(window).on('resize.editor', function() {
-            mapDimensions = content.dimensions(null);
-            map.dimensions(mapDimensions);
+            mapDimensions = setDimensions(content, null);
+            setDimensions(map, mapDimensions);
         });
 
         function pan(d) {

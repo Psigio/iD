@@ -1,3 +1,4 @@
+import { rebind } from '../../modules/util/rebind';
 import * as d3 from 'd3';
 
 export function d3combobox() {
@@ -282,7 +283,7 @@ export function d3combobox() {
         return combobox;
     };
 
-    return d3.rebind(combobox, event, 'on');
+    return rebind(combobox, event, 'on');
 };
 
 d3combobox.off = function(input) {

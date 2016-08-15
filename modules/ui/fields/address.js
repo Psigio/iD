@@ -1,3 +1,4 @@
+import { rebind } from '../../util/rebind';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -222,5 +223,5 @@ export function address(field, context) {
         if (node) node.focus();
     };
 
-    return d3.rebind(address, dispatch, 'on');
+    return rebind(address, dispatch, 'on');
 }

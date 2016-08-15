@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import { d3combobox } from '../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
@@ -275,5 +276,5 @@ export function preset(context) {
         return presets;
     };
 
-    return d3.rebind(presets, event, 'on');
+    return rebind(presets, event, 'on');
 }

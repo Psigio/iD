@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 /* global Mapillary:false */
 import _ from 'lodash';
@@ -405,7 +406,7 @@ export function init() {
         mapillary.reset();
     }
 
-    mapillary.event = d3.rebind(mapillary, dispatch, 'on');
+    mapillary.event = rebind(mapillary, dispatch, 'on');
 
     return mapillary;
 }

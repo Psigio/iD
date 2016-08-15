@@ -7,7 +7,7 @@ import { line } from './line';
 import { navigation } from './navigation';
 import { point } from './point';
 import { startEditing } from './start_editing';
-import { d3curtain } from '../../../js/lib/d3.curtain';
+import { d3curtain } from '../../util/curtain';
 import { default as introGraphRaw } from '../../../data/intro_graph.json';
 
 var sampleIntros = {

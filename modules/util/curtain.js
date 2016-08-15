@@ -1,3 +1,5 @@
+import { getDimensions } from './dimensions';
+import { rebind } from '../../modules/util/rebind';
 import * as d3 from 'd3';
 
 // Tooltips and svg mask used to highlight certain features
@@ -59,10 +61,9 @@ export function d3curtain() {
             var html = parts[0] ? '<span>' + parts[0] + '</span>' : '';
             if (parts[1]) html += '<span class="bold">' + parts[1] + '</span>';
 
-            var dimensions = tooltip.classed('in', true)
+            var dimensions = getDimensions(tooltip.classed('in', true)
                 .select('.tooltip-inner')
-                    .html(html)
-                    .dimensions();
+                    .html(html));
 
             var pos;
 
@@ -129,5 +130,5 @@ export function d3curtain() {
         tooltip.remove();
     };
 
-    return d3.rebind(curtain, event, 'on');
+    return rebind(curtain, event, 'on');
 };

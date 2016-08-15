@@ -1,3 +1,4 @@
+import { rebind } from '../../util/rebind';
 import * as d3 from 'd3';
 import { t } from '../../util/locale';
 
@@ -36,5 +37,5 @@ export function textarea(field) {
         input.node().focus();
     };
 
-    return d3.rebind(textarea, dispatch, 'on');
+    return rebind(textarea, dispatch, 'on');
 }

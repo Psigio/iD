@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import { d3combobox } from '../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
@@ -254,5 +255,5 @@ export function RawTagEditor(context) {
         return rawTagEditor;
     };
 
-    return d3.rebind(rawTagEditor, event, 'on');
+    return rebind(rawTagEditor, event, 'on');
 }

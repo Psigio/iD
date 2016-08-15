@@ -4,6 +4,7 @@ import { Debug, Gpx } from '../svg/index';
 import { RawMercator } from '../geo/index';
 import { TileLayer } from '../renderer/index';
 import { setTransform } from '../util/index';
+import { getDimensions, setDimensions } from '../util/dimensions';
 
 export function MapInMap(context) {
     var key = '/';
@@ -77,7 +78,7 @@ export function MapInMap(context) {
             panning = false;
 
             if (tCurr[0] !== tStart[0] && tCurr[1] !== tStart[1]) {
-                var dMini = wrap.dimensions(),
+                var dMini = getDimensions(wrap),
                     cMini = [ dMini[0] / 2, dMini[1] / 2 ];
 
                 context.map().center(projection.invert(cMini));
@@ -87,7 +88,7 @@ export function MapInMap(context) {
 
         function updateProjection() {
             var loc = context.map().center(),
-                dMini = wrap.dimensions(),
+                dMini = getDimensions(wrap),
                 cMini = [ dMini[0] / 2, dMini[1] / 2 ],
                 tMain = context.projection.translate(),
                 kMain = context.projection.scale(),
@@ -131,7 +132,7 @@ export function MapInMap(context) {
 
             updateProjection();
 
-            var dMini = wrap.dimensions(),
+            var dMini = getDimensions(wrap),
                 zMini = ktoz(projection.scale() * 2 * Math.PI);
 
             // setup tile container

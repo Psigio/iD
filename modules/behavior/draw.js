@@ -1,3 +1,5 @@
+import { rebind } from '../util/rebind';
+import { getDimensions } from '../util/dimensions';
 import { d3keybinding } from '../../js/lib/d3.keybinding.js';
 import * as d3 from 'd3';
 import { chooseEdge, euclideanDistance } from '../geo/index';
@@ -88,7 +90,7 @@ export function Draw(context) {
     function click() {
         var d = datum();
         if (d.type === 'way') {
-            var dims = context.map().dimensions(),
+            var dims = getDimensions(context.map()),
                 mouse = context.mouse(),
                 pad = 5,
                 trySnap = mouse[0] > pad && mouse[0] < dims[0] - pad &&
@@ -206,7 +208,7 @@ export function Draw(context) {
         return draw;
     };
 
-    return d3.rebind(draw, event, 'on');
+    return rebind(draw, event, 'on');
 }
 
 Draw.usedTails = {};

@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import { Toggle } from './toggle';
 
@@ -53,5 +54,5 @@ export function Disclosure() {
         return disclosure;
     };
 
-    return d3.rebind(disclosure, dispatch, 'on');
+    return rebind(disclosure, dispatch, 'on');
 }

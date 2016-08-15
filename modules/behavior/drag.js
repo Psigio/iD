@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import { prefixCSSProperty, prefixDOMProperty } from '../util/index';
 /*
@@ -200,5 +201,5 @@ export function drag() {
         return drag;
     };
 
-    return d3.rebind(drag, event, 'on');
+    return rebind(drag, event, 'on');
 }

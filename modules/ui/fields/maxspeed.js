@@ -1,3 +1,4 @@
+import { rebind } from '../../util/rebind';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -112,5 +113,5 @@ export function maxspeed(field, context) {
         entity = _;
     };
 
-    return d3.rebind(maxspeed, dispatch, 'on');
+    return rebind(maxspeed, dispatch, 'on');
 }

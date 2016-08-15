@@ -1,3 +1,4 @@
+import { rebind } from '../../util/rebind';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import { t } from '../../util/locale';
@@ -207,5 +208,5 @@ export function wikipedia(field, context) {
         title.node().focus();
     };
 
-    return d3.rebind(wiki, dispatch, 'on');
+    return rebind(wiki, dispatch, 'on');
 }

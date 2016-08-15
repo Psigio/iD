@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import { functor } from '../util/index';
 import { d3geoTile } from '../../js/lib/d3.geo.tile';
 import * as d3 from 'd3';
@@ -478,5 +479,5 @@ export function Connection(useHttps) {
         return oauth.authenticate(done);
     };
 
-    return d3.rebind(connection, event, 'on');
+    return rebind(connection, event, 'on');
 }

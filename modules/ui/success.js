@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
 import { tooltip } from '../util/tooltip';
@@ -69,5 +70,5 @@ export function Success(context) {
         return success;
     };
 
-    return d3.rebind(success, dispatch, 'on');
+    return rebind(success, dispatch, 'on');
 }

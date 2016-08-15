@@ -1,3 +1,4 @@
+import { rebind } from '../../util/rebind';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 export function cycleway(field) {
@@ -98,5 +99,5 @@ export function cycleway(field) {
             .node().focus();
     };
 
-    return d3.rebind(cycleway, dispatch, 'on');
+    return rebind(cycleway, dispatch, 'on');
 }

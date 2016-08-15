@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import { d3keybinding } from '../../js/lib/d3.keybinding.js';
 import * as d3 from 'd3';
 import { Entity } from '../core/index';
@@ -126,5 +127,5 @@ export function Hover() {
         return hover;
     };
 
-    return d3.rebind(hover, dispatch, 'on');
+    return rebind(hover, dispatch, 'on');
 }

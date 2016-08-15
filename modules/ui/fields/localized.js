@@ -1,3 +1,4 @@
+import { rebind } from '../../util/rebind';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import { t } from '../../util/locale';
@@ -249,5 +250,5 @@ export function localized(field, context) {
         return localized;
     };
 
-    return d3.rebind(localized, dispatch, 'on');
+    return rebind(localized, dispatch, 'on');
 }

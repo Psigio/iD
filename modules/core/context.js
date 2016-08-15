@@ -1,3 +1,4 @@
+import { rebind } from '../util/rebind';
 import * as d3 from 'd3';
 import { t, addTranslation, setLocale } from '../util/locale';
 import _ from 'lodash';
@@ -400,6 +401,6 @@ export function Context(root) {
 
     presets = presetsInit();
 
-    return d3.rebind(context, dispatch, 'on');
+    return rebind(context, dispatch, 'on');
 }
 
