@@ -1,5 +1,6 @@
 import { rebind } from '../../util/rebind';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
+import { getSetValue } from '../../util/get_set_value';
 import * as d3 from 'd3';
 import { t } from '../../util/locale';
 import { tooltip } from '../../util/tooltip';
@@ -76,7 +77,7 @@ export function localized(field, context) {
     function change(onInput) {
         return function() {
             var t = {};
-            t[field.key] = d3.select(this).value() || undefined;
+            t[field.key] = getSetValue(d3.select(this)) || undefined;
             dispatch.change(t, onInput);
         };
     }
@@ -84,7 +85,7 @@ export function localized(field, context) {
     function key(lang) { return field.key + ':' + lang; }
 
     function changeLang(d) {
-        var lang = d3.select(this).value(),
+        var lang = getSetValue(d3.select(this)),
             t = {},
             language = _.find(wikipediaData, function(d) {
                 return d[0].toLowerCase() === lang.toLowerCase() ||
@@ -97,9 +98,8 @@ export function localized(field, context) {
             t[key(d.lang)] = undefined;
         }
 
-        var value = d3.select(this.parentNode)
-            .selectAll('.localized-value')
-            .value();
+        var value = getSetValue(d3.select(this.parentNode)
+            .selectAll('.localized-value'));
 
         if (lang && value) {
             t[key(lang)] = value;
@@ -114,7 +114,7 @@ export function localized(field, context) {
     function changeValue(d) {
         if (!d.lang) return;
         var t = {};
-        t[key(d.lang)] = d3.select(this).value() || undefined;
+        t[key(d.lang)] = getSetValue(d3.select(this)) || undefined;
         dispatch.change(t);
     }
 
@@ -205,14 +205,13 @@ export function localized(field, context) {
 
         var entry = selection.selectAll('.entry');
 
-        entry.select('.localized-lang')
-            .value(function(d) {
+        getSetValue(entry.select('.localized-lang'), function(d) {
                 var lang = _.find(wikipediaData, function(lang) { return lang[2] === d.lang; });
                 return lang ? lang[1] : d.lang;
             });
 
-        entry.select('.localized-value')
-            .value(function(d) { return d.value; });
+        getSetValue(entry.select('.localized-value'),
+            function(d) { return d.value; });
     }
 
     localized.tags = function(tags) {
@@ -227,7 +226,7 @@ export function localized(field, context) {
             }
         }
 
-        input.value(tags[field.key] || '');
+        getSetValue(input, tags[field.key] || '');
 
         var postfixed = [], k, m;
         for (k in tags) {

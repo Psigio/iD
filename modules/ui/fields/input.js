@@ -1,4 +1,5 @@
 import { rebind } from '../../util/rebind';
+import { getSetValue } from '../../util/get_set_value';
 import * as d3 from 'd3';
 import { t } from '../../util/locale';
 import { nominatim as nominatimService } from '../../services/index';
@@ -73,7 +74,7 @@ export function url(field, context) {
     function change(onInput) {
         return function() {
             var t = {};
-            t[field.key] = input.value() || undefined;
+            t[field.key] = getSetValue(input) || undefined;
             dispatch.change(t, onInput);
         };
     }
@@ -85,7 +86,7 @@ export function url(field, context) {
     };
 
     i.tags = function(tags) {
-        input.value(tags[field.key] || '');
+        getSetValue(input, tags[field.key] || '');
     };
 
     i.focus = function() {

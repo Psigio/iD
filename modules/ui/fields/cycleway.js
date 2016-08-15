@@ -1,4 +1,5 @@
 import { rebind } from '../../util/rebind';
+import { getSetValue } from '../../util/get_set_value';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 export function cycleway(field) {
@@ -47,8 +48,8 @@ export function cycleway(field) {
 
     function change() {
         var inputs = d3.selectAll('.preset-input-cycleway')[0],
-            left = d3.select(inputs[0]).value(),
-            right = d3.select(inputs[1]).value(),
+            left = getSetValue(d3.select(inputs[0])),
+            right = getSetValue(d3.select(inputs[1])),
             tag = {};
         if (left === 'none' || left === '') { left = undefined; }
         if (right === 'none' || right === '') { right = undefined; }
@@ -83,8 +84,7 @@ export function cycleway(field) {
     };
 
     cycleway.tags = function(tags) {
-        items.selectAll('.preset-input-cycleway')
-            .value(function(d) {
+        getSetValue(items.selectAll('.preset-input-cycleway'), function(d) {
                 // If cycleway is set, always return that
                 if (tags.cycleway) {
                     return tags.cycleway;

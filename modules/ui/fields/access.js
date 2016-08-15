@@ -1,4 +1,5 @@
 import { rebind } from '../../util/rebind';
+import { getSetValue } from '../../util/get_set_value';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -49,7 +50,7 @@ export function access(field) {
 
     function change(d) {
         var tag = {};
-        tag[d] = d3.select(this).value() || undefined;
+        tag[d] = getSetValue(d3.select(this)) || undefined;
         dispatch.change(tag);
     }
 
@@ -177,8 +178,8 @@ export function access(field) {
     };
 
     access.tags = function(tags) {
-        items.selectAll('.preset-input-access')
-            .value(function(d) { return tags[d] || ''; })
+        getSetValue(items.selectAll('.preset-input-access'),
+            function(d) { return tags[d] || ''; })
             .attr('placeholder', function() {
                 return tags.access ? tags.access : field.placeholder();
             });

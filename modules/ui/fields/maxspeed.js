@@ -1,4 +1,5 @@
 import { rebind } from '../../util/rebind';
+import { getSetValue } from '../../util/get_set_value';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -55,8 +56,8 @@ export function maxspeed(field, context) {
             .call(unitCombobox);
 
         function changeUnits() {
-            imperial = unitInput.value() === 'mph';
-            unitInput.value(imperial ? 'mph' : 'km/h');
+            imperial = getSetValue(unitInput) === 'mph';
+            getSetValue(unitInput, imperial ? 'mph' : 'km/h');
             setSuggestions();
             change();
         }
@@ -65,7 +66,7 @@ export function maxspeed(field, context) {
 
     function setSuggestions() {
         combobox.data((imperial ? imperialValues : metricValues).map(comboValues));
-        unitInput.value(imperial ? 'mph' : 'km/h');
+        getSetValue(unitInput, imperial ? 'mph' : 'km/h');
     }
 
     function comboValues(d) {
@@ -77,7 +78,7 @@ export function maxspeed(field, context) {
 
     function change() {
         var tag = {},
-            value = input.value();
+            value = getSetValue(input);
 
         if (!value) {
             tag[field.key] = undefined;
@@ -102,7 +103,7 @@ export function maxspeed(field, context) {
 
         setSuggestions();
 
-        input.value(value || '');
+        getSetValue(input, value || '');
     };
 
     maxspeed.focus = function() {

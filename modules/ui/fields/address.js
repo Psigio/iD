@@ -1,4 +1,5 @@
 import { rebind } from '../../util/rebind';
+import { getSetValue } from '../../util/get_set_value';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -196,10 +197,9 @@ export function address(field, context) {
     }
 
     function updateTags(tags) {
-        wrap.selectAll('input')
-            .value(function (field) {
-                return tags['addr:' + field.id] || '';
-            });
+        getSetValue(wrap.selectAll('input'), function (field) {
+            return tags['addr:' + field.id] || '';
+        });
     }
 
     address.entity = function(_) {

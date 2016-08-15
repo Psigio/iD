@@ -1,4 +1,5 @@
 import { rebind } from '../util/rebind';
+import { getSetValue } from '../util/get_set_value';
 import { d3combobox } from '../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
@@ -209,7 +210,7 @@ export function preset(context) {
             .attr('class', 'value')
             .attr('type', 'text');
 
-        $input.value('')
+        getSetValue($input, '')
             .attr('placeholder', function() {
                 var placeholder = [];
                 for (var field in notShown) {

@@ -1,4 +1,5 @@
 import { rebind } from '../util/rebind';
+import { getSetValue } from '../util/get_set_value';
 import { d3combobox } from '../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import { t } from '../util/locale';
@@ -107,18 +108,18 @@ export function RawTagEditor(context) {
                 .call(reference.body);
         });
 
-        $items.select('input.key')
+        getSetValue($items.select('input.key')
             .attr('title', function(d) { return d.key; })
-            .value(function(d) { return d.key; })
             .on('blur', keyChange)
-            .on('change', keyChange);
+            .on('change', keyChange),
+            function(d) { return d.key; })
 
-        $items.select('input.value')
+        getSetValue($items.select('input.value')
             .attr('title', function(d) { return d.value; })
-            .value(function(d) { return d.value; })
             .on('blur', valueChange)
             .on('change', valueChange)
-            .on('keydown.push-more', pushMore);
+            .on('keydown.push-more', pushMore),
+            function(d) { return d.value; })
 
         $items.select('button.remove')
             .on('click', removeTag);
@@ -167,7 +168,7 @@ export function RawTagEditor(context) {
                 .fetcher(function(value, callback) {
                     context.taginfo().values({
                         debounce: true,
-                        key: key.value(),
+                        key: getSetValue(key),
                         geometry: context.geometry(id),
                         query: value
                     }, function(err, data) {

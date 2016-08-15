@@ -1,4 +1,5 @@
 import { rebind } from '../../util/rebind';
+import { getSetValue } from '../../util/get_set_value';
 import { d3combobox } from '../../../js/lib/d3.combobox.js';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -192,13 +193,13 @@ export function combo(field, context) {
 
 
     function change() {
-        var val = tagValue(input.value()),
+        var val = tagValue(getSetValue(input)),
             t = {};
 
         if (isMulti) {
             if (!val) return;
             container.classed('active', false);
-            input.value('');
+            getSetValue(input, '');
             field.keys.push(field.key + val);
             t[field.key + val] = 'yes';
             window.setTimeout(function() { input.node().focus(); }, 10);
@@ -318,7 +319,7 @@ export function combo(field, context) {
                 .remove();
 
         } else {
-            input.value(displayValue(tags[field.key]));
+            getSetValue(input, displayValue(tags[field.key]));
         }
     };
 

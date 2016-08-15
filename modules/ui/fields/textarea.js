@@ -24,13 +24,13 @@ export function textarea(field) {
     function change(onInput) {
         return function() {
             var t = {};
-            t[field.key] = input.value() || undefined;
+            t[field.key] = getSetValue(input) || undefined;
             dispatch.change(t, onInput);
         };
     }
 
     textarea.tags = function(tags) {
-        input.value(tags[field.key] || '');
+        getSetValue(input, tags[field.key] || '');
     };
 
     textarea.focus = function() {
