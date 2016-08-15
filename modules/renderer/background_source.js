@@ -112,7 +112,7 @@ BackgroundSource.Bing = function(data, dispatch) {
                 })
             };
         });
-        dispatch.change();
+        dispatch.call("change");
     });
 
     bing.copyrightNotices = function(zoom, extent) {

@@ -178,7 +178,7 @@ export function address(field, context) {
             wrap.selectAll('input:not(.combobox-input)')
                 .on('input', change(true));
 
-            dispatch.init();
+            dispatch.call("init");
             isInitialized = true;
         });
     }
@@ -192,7 +192,7 @@ export function address(field, context) {
                     tags['addr:' + field.id] = this.value || undefined;
                 });
 
-            dispatch.change(tags, onInput);
+            dispatch.call("change", this, tags, onInput);
         };
     }
 
@@ -212,7 +212,7 @@ export function address(field, context) {
         if (isInitialized) {
             updateTags(tags);
         } else {
-            dispatch.on('init', function () {
+            dispatch.call("on", this, 'init', function () {
                 updateTags(tags);
             });
         }

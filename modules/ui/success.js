@@ -16,7 +16,7 @@ export function Success(context) {
 
         header.append('button')
             .attr('class', 'fr')
-            .on('click', function() { dispatch.cancel(); })
+            .on('click', function() { dispatch.call("cancel"); })
             .call(Icon('#icon-close'));
 
         header.append('h3')

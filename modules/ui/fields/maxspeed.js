@@ -88,7 +88,7 @@ export function maxspeed(field, context) {
             tag[field.key] = value + ' mph';
         }
 
-        dispatch.change(tag);
+        dispatch.call("change", this, tag);
     }
 
     maxspeed.tags = function(tags) {

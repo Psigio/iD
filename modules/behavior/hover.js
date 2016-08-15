@@ -19,7 +19,7 @@ export function Hover() {
 
     function keydown() {
         if (altDisables && d3.event.keyCode === d3keybinding.modifierCodes.alt) {
-            dispatch.hover(null);
+            dispatch.call("hover", this, null);
             selection.selectAll('.hover')
                 .classed('hover-suppressed', true)
                 .classed('hover', false);
@@ -28,7 +28,7 @@ export function Hover() {
 
     function keyup() {
         if (altDisables && d3.event.keyCode === d3keybinding.modifierCodes.alt) {
-            dispatch.hover(target ? target.id : null);
+            dispatch.call("hover", this, target ? target.id : null);
             selection.selectAll('.hover-suppressed')
                 .classed('hover-suppressed', false)
                 .classed('hover', true);
@@ -62,9 +62,9 @@ export function Hover() {
                 selection.selectAll(selector)
                     .classed(suppressed ? 'hover-suppressed' : 'hover', true);
 
-                dispatch.hover(target.id);
+                dispatch.call("hover", this, target.id);
             } else {
-                dispatch.hover(null);
+                dispatch.call("hover", this, null);
             }
         }
 

@@ -25,7 +25,7 @@ export function textarea(field) {
         return function() {
             var t = {};
             t[field.key] = getSetValue(input) || undefined;
-            dispatch.change(t, onInput);
+            dispatch.call("change", this, t, onInput);
         };
     }
 

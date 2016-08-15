@@ -132,7 +132,7 @@ export function wikipedia(field, context) {
             syncTags.wikidata = undefined;
         }
 
-        dispatch.change(syncTags);
+        dispatch.call("change", this, syncTags);
 
 
         if (skipWikidata || !value || !language()[2]) return;
@@ -163,7 +163,7 @@ export function wikipedia(field, context) {
             });
 
             context.overwrite(ChangeTags(currEntityId, currTags), annotation);
-            dispatch.change(currTags);
+            dispatch.call("change", this, currTags);
         });
     }
 

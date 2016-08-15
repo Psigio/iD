@@ -13,9 +13,10 @@ export function Map(context) {
     var dimensions = [1, 1],
         dispatch = d3.dispatch('move', 'drawn'),
         projection = context.projection,
-        zoom = d3.zoom()
+        initialTransform = d3.zoomIdentity
             .translate(projection.translate())
-            .scale(projection.scale() * 2 * Math.PI)
+            .scale(projection.scale() * 2 * Math.PI),
+        zoom = d3.zoom()
             .scaleExtent([1024, 256 * Math.pow(2, 24)])
             .on('zoom', zoomPan),
         dblclickEnabled = true,
@@ -54,7 +55,7 @@ export function Map(context) {
 
         selection
             .on('dblclick.map', dblClick)
-            .call(zoom);
+            .call(zoom, initialTransform);
 
         supersurface = selection.append('div')
             .attr('id', 'supersurface')
@@ -87,14 +88,14 @@ export function Map(context) {
                 if (map.editable() && !transformed) {
                     var hover = d3.event.target.__data__;
                     surface.call(drawVertices.drawHover, context.graph(), hover, map.extent(), map.zoom());
-                    dispatch.drawn({full: false});
+                    dispatch.call("drawn", this, {full: false});
                 }
             })
             .on('mouseout.vertices', function() {
                 if (map.editable() && !transformed) {
                     var hover = d3.event.relatedTarget && d3.event.relatedTarget.__data__;
                     surface.call(drawVertices.drawHover, context.graph(), hover, map.extent(), map.zoom());
-                    dispatch.drawn({full: false});
+                    dispatch.call("drawn", this, {full: false});
                 }
             });
 
@@ -113,7 +114,7 @@ export function Map(context) {
                 surface
                     .call(drawVertices, graph, all, filter, map.extent(), map.zoom())
                     .call(drawMidpoints, graph, all, filter, map.trimmedExtent());
-                dispatch.drawn({full: false});
+                dispatch.call("drawn", this, {full: false});
             }
         });
 
@@ -166,13 +167,13 @@ export function Map(context) {
             .call(drawLabels, graph, data, filter, dimensions, !difference && !extent)
             .call(drawPoints, graph, data, filter);
 
-        dispatch.drawn({full: true});
+        dispatch.call("drawn", this, {full: true});
     }
 
     function editOff() {
         context.features().resetStats();
         surface.selectAll('.layer-osm *').remove();
-        dispatch.drawn({full: true});
+        dispatch.call("drawn", this, {full: true});
     }
 
     function dblClick() {
@@ -190,7 +191,7 @@ export function Map(context) {
                 .text(t('cannot_zoom'));
             setZoom(context.minEditableZoom(), true);
             queueRedraw();
-            dispatch.move(map);
+            dispatch.call("move", this, map);
             return;
         }
 
@@ -206,7 +207,7 @@ export function Map(context) {
         setTransform(supersurface, tX, tY, scale);
         queueRedraw();
 
-        dispatch.move(map);
+        dispatch.call("move", this, map);
     }
 
     function resetTransform() {
@@ -351,7 +352,7 @@ export function Map(context) {
         t[1] += d[1];
         projection.translate(t);
         zoom.translate(projection.translate());
-        dispatch.move(map);
+        dispatch.call("move", this, map);
         return redraw();
     };
 
@@ -387,7 +388,7 @@ export function Map(context) {
         }
 
         if (setCenter(loc)) {
-            dispatch.move(map);
+            dispatch.call("move", this, map);
         }
 
         return redraw();
@@ -407,7 +408,7 @@ export function Map(context) {
         }
 
         if (setZoom(z)) {
-            dispatch.move(map);
+            dispatch.call("move", this, map);
         }
 
         return redraw();
@@ -427,7 +428,7 @@ export function Map(context) {
             zoomed   = setZoom(z);
 
         if (centered || zoomed) {
-            dispatch.move(map);
+            dispatch.call("move", this, map);
         }
 
         return redraw();

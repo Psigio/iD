@@ -208,7 +208,7 @@ export function combo(field, context) {
             t[field.key] = val;
         }
 
-        dispatch.change(t);
+        dispatch.call("change", this, t);
     }
 
 
@@ -216,7 +216,7 @@ export function combo(field, context) {
         d3.event.stopPropagation();
         var t = {};
         t[d.key] = undefined;
-        dispatch.change(t);
+        dispatch.call("change", this, t);
     }
 
 

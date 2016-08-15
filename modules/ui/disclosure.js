@@ -32,7 +32,7 @@ export function Disclosure() {
             expanded = !expanded;
             $link.classed('expanded', expanded);
             $body.call(Toggle(expanded));
-            dispatch.toggled(expanded);
+            dispatch.call("toggled", this, expanded);
         }
     };
 

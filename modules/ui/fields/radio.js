@@ -49,7 +49,7 @@ export function radio(field) {
                 t[d] = active ? 'yes' : undefined;
             }
         });
-        dispatch.change(t);
+        dispatch.call("change", this, t);
     }
 
     radio.tags = function(tags) {

@@ -78,7 +78,7 @@ export function localized(field, context) {
         return function() {
             var t = {};
             t[field.key] = getSetValue(d3.select(this)) || undefined;
-            dispatch.change(t, onInput);
+            dispatch.call("change", this, t, onInput);
         };
     }
 
@@ -108,14 +108,14 @@ export function localized(field, context) {
         }
 
         d.lang = lang;
-        dispatch.change(t);
+        dispatch.call("change", this, t);
     }
 
     function changeValue(d) {
         if (!d.lang) return;
         var t = {};
         t[key(d.lang)] = getSetValue(d3.select(this)) || undefined;
-        dispatch.change(t);
+        dispatch.call("change", this, t);
     }
 
     function fetcher(value, cb) {
@@ -153,7 +153,7 @@ export function localized(field, context) {
                         d3.event.preventDefault();
                         var t = {};
                         t[key(d.lang)] = undefined;
-                        dispatch.change(t);
+                        dispatch.call("change", this, t);
                         d3.select(this.parentNode.parentNode)
                             .style('top','0')
                             .style('max-height','240px')

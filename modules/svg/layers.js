@@ -63,7 +63,7 @@ export function Layers(projection, context) {
         arr.forEach(function(id) {
             layers = _.reject(layers, function(o) {return o.id === id;});
         });
-        dispatch.change();
+        dispatch.call("change");
         return this;
     };
 
@@ -74,7 +74,7 @@ export function Layers(projection, context) {
                 layers.push(obj);
             }
         });
-        dispatch.change();
+        dispatch.call("change");
         return this;
     };
 

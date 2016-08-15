@@ -210,8 +210,8 @@ function loadTilePage(which, url, tile, page) {
 
             cache.rtree.load(features);
 
-            if (which === 'images') dispatch.loadedImages();
-            if (which === 'signs') dispatch.loadedSigns();
+            if (which === 'images') dispatch.call("loadedImages");
+            if (which === 'signs') dispatch.call("loadedSigns");
 
             if (data.features.length === maxResults && nextPage < maxPages) {
                 loadTilePage(which, url, tile, nextPage);

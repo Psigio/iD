@@ -71,7 +71,7 @@ export function cycleway(field) {
             };
         }
 
-        dispatch.change(tag);
+        dispatch.call("change", this, tag);
     }
 
     cycleway.options = function() {

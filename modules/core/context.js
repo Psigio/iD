@@ -172,12 +172,12 @@ export function Context(root) {
     context.enter = function(newMode) {
         if (mode) {
             mode.exit();
-            dispatch.exit(mode);
+            dispatch.call("exit", this, mode);
         }
 
         mode = newMode;
         mode.enter();
-        dispatch.enter(mode);
+        dispatch.call("enter", this, mode);
     };
 
     context.selectedIDs = function() {
@@ -253,7 +253,7 @@ export function Context(root) {
     context.setDebug = function(flag, val) {
         if (arguments.length === 1) val = true;
         debugFlags[flag] = val;
-        dispatch.change();
+        dispatch.call("change");
         return context;
     };
     context.getDebug = function(flag) {

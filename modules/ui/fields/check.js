@@ -58,7 +58,7 @@ export function check(field) {
             .on('click', function() {
                 var t = {};
                 t[field.key] = values[(values.indexOf(value) + 1) % values.length];
-                dispatch.change(t);
+                dispatch.call("change", this, t);
                 d3.event.stopPropagation();
             });
 

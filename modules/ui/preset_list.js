@@ -37,7 +37,7 @@ export function PresetList(context) {
         if (context.entity(id).isUsed(context.graph())) {
             messagewrap.append('button')
                 .attr('class', 'preset-choose')
-                .on('click', function() { dispatch.choose(currentPreset); })
+                .on('click', function() { dispatch.call("choose", this, currentPreset); })
                 .append('span')
                 .html('&#9658;');
         } else {
@@ -232,7 +232,7 @@ export function PresetList(context) {
                 ChangePreset(id, currentPreset, preset),
                 t('operations.change_tags.annotation'));
 
-            dispatch.choose(preset);
+            dispatch.call("choose", this, preset);
         };
 
         item.help = function() {

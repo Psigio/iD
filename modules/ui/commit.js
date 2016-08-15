@@ -184,7 +184,7 @@ export function Commit(context) {
 
         var cancelButton = buttonSection.append('button')
             .attr('class', 'secondary-action col5 button cancel-button')
-            .on('click.cancel', function() { dispatch.cancel(); });
+            .on('click.cancel', function() { dispatch.call("cancel"); });
 
         cancelButton.append('span')
             .attr('class', 'label')
@@ -197,7 +197,7 @@ export function Commit(context) {
                 return (n && n.value.length) ? null : true;
             })
             .on('click.save', function() {
-                dispatch.save({
+                dispatch.call('save', this, {
                     comment: commentField.node().value
                 });
             });

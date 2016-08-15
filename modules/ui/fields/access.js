@@ -51,7 +51,7 @@ export function access(field) {
     function change(d) {
         var tag = {};
         tag[d] = getSetValue(d3.select(this)) || undefined;
-        dispatch.change(tag);
+        dispatch.call("change", this, tag);
     }
 
     access.options = function(type) {

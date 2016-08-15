@@ -56,8 +56,8 @@ export function Features(context) {
 
     function update() {
         _hidden = features.hidden();
-        dispatch.change();
-        dispatch.redraw();
+        dispatch.call("change");
+        dispatch.call("redraw");
     }
 
     function defineFeature(k, filter, max) {
@@ -228,7 +228,7 @@ export function Features(context) {
 
     features.resetStats = function() {
         _.each(_features, function(f) { f.count = 0; });
-        dispatch.change();
+        dispatch.call("change");
     };
 
     features.gatherStats = function(d, resolver, dimensions) {
@@ -257,7 +257,7 @@ export function Features(context) {
         if (currHidden !== _hidden) {
             _hidden = currHidden;
             needsRedraw = true;
-            dispatch.change();
+            dispatch.call("change");
         }
 
         return needsRedraw;

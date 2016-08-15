@@ -98,7 +98,7 @@ export function EntityEditor(context) {
 
         selection.selectAll('.preset-reset')
             .on('click', function() {
-                dispatch.choose(activePreset);
+                dispatch.call("choose", this, activePreset);
             });
 
         // Update

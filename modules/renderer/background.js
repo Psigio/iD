@@ -1,5 +1,4 @@
 import { rebind } from '../util/rebind';
-import { setDimensions } from '../util/dimensions';
 import * as d3 from 'd3';
 import _ from 'lodash';
 import { Extent, metersToOffset, offsetToMeters} from '../geo/index';
@@ -116,17 +115,17 @@ export function Background(context) {
 
     background.dimensions = function(_) {
         if (!_) return;
-        setDimensions(baseLayer, _);
+        baseLayer.dimensions(_);
 
         overlayLayers.forEach(function(layer) {
-            setDimensions(layer, _);
+            layer.dimensions(_);
         });
     };
 
     background.baseLayerSource = function(d) {
         if (!arguments.length) return baseLayer.source();
         baseLayer.source(d);
-        dispatch.change();
+        dispatch.call("change");
         background.updateImagery();
         return background;
     };
@@ -152,24 +151,25 @@ export function Background(context) {
             layer = overlayLayers[i];
             if (layer.source() === d) {
                 overlayLayers.splice(i, 1);
-                dispatch.change();
+                dispatch.call("change");
                 background.updateImagery();
                 return;
             }
         }
 
-        layer = setDimensions(TileLayer(context)
+        layer = TileLayer(context)
             .source(d)
-            .projection(context.projection), getDimensions(baseLayer));
+            .projection(context.projection)
+            .dimensions(baseLayer.dimensions());
 
         overlayLayers.push(layer);
-        dispatch.change();
+        dispatch.call("change");
         background.updateImagery();
     };
 
     background.nudge = function(d, zoom) {
         baseLayer.source().nudge(d, zoom);
-        dispatch.change();
+        dispatch.call("change");
         background.updateImagery();
         return background;
     };
@@ -177,7 +177,7 @@ export function Background(context) {
     background.offset = function(d) {
         if (!arguments.length) return baseLayer.source().offset();
         baseLayer.source().offset(d);
-        dispatch.change();
+        dispatch.call("change");
         background.updateImagery();
         return background;
     };
