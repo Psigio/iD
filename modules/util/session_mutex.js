@@ -3,7 +3,7 @@
 // switch. If the session crashes, the mutex will auto-release
 // after 5 seconds.
 
-// This is a type alias (https://flow.org/en/docs/types/aliases/) which allows flow to understand the object returned by utilSessionMutex in other files.
+// This is a Type Alias (https://flow.org/en/docs/types/aliases/) which allows Flow to understand the object returned by utilSessionMutex in other files.
 type utilSessionMutexType = {
     lock: () => boolean,
     unlock: () => void,
@@ -15,7 +15,7 @@ export function utilSessionMutex(name: string): utilSessionMutexType {
     var mutex = {};
     var intervalID: ?IntervalID; // This indicates a Maybe type - intervalId can be null so we need to use "?IntervalID", not "IntervalID"
 
-    function renew() {
+    function renew(): void {
         var expires = new Date();
         expires.setSeconds(expires.getSeconds() + 5);
         document.cookie = name + '=1; expires=' + expires.toUTCString();
