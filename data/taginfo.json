@@ -846,6 +846,10 @@
         },
         {
             "key": "building",
+            "value": "farm_auxiliary"
+        },
+        {
+            "key": "building",
             "value": "farm"
         },
         {
@@ -1776,6 +1780,10 @@
         {
             "key": "leisure",
             "value": "dance"
+        },
+        {
+            "key": "dance:teaching",
+            "value": "yes"
         },
         {
             "key": "leisure",

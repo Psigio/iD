@@ -402,6 +402,9 @@ en:
         types:
           'cycleway:left': Left side
           'cycleway:right': Right side
+      dance/style:
+        # 'dance:style=*'
+        label: Dance Styles
       date:
         # date=*
         label: Date
@@ -2567,6 +2570,10 @@ en:
         name: Entrance/Exit
       building/farm:
         # building=farm
+        name: Farm House
+        terms: '<translate with synonyms or related terms for ''Farm House'', separated by commas>'
+      building/farm_auxiliary:
+        # building=farm_auxiliary
         name: Farm Building
         terms: '<translate with synonyms or related terms for ''Farm Building'', separated by commas>'
       building/garage:
@@ -3613,6 +3620,11 @@ en:
         name: Dance Hall
         # 'terms: ballroom,jive,swing,tango,waltz'
         terms: '<translate with synonyms or related terms for ''Dance Hall'', separated by commas>'
+      leisure/dancing_school:
+        # 'leisure=dance, dance:teaching=yes'
+        name: Dance School
+        # 'terms: jive,swing,tango,waltz,dance teaching'
+        terms: '<translate with synonyms or related terms for ''Dance School'', separated by commas>'
       leisure/dog_park:
         # leisure=dog_park
         name: Dog Park
