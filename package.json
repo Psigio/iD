@@ -10,7 +10,7 @@
   ],
   "license": "ISC",
   "scripts": {
-    "all": "npm-run-all -s clean flow build dist",
+    "all": "npm-run-all -s clean build dist",
     "build": "node development_server.js",
     "clean": "shx rm -f dist/*.js dist/*.map dist/*.css dist/img/*.svg",
     "dist": "npm-run-all -p dist:**",
@@ -73,6 +73,7 @@
     "rollup-plugin-includepaths": "~0.2.2",
     "rollup-plugin-json": "~2.2.0",
     "rollup-plugin-node-resolve": "~3.0.0",
+    "rollup-plugin-typescript": "^0.8.1",
     "shelljs": "^0.8.0",
     "shx": "^0.2.1",
     "sinon": "^4.0.0",

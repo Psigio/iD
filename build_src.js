@@ -7,7 +7,7 @@ const commonjs = require('rollup-plugin-commonjs');
 const json = require('rollup-plugin-json');
 const includePaths = require('rollup-plugin-includepaths');
 const colors = require('colors/safe');
-const flow = require('rollup-plugin-flow');
+const typescript = require('rollup-plugin-typescript');
 
 
 module.exports = function buildSrc() {
@@ -29,7 +29,7 @@ module.exports = function buildSrc() {
             .rollup({
                 input: './modules/id.js',
                 plugins: [
-                    flow(),
+                    typescript(),
                     includePaths({
                         paths: [
                             'node_modules/d3/node_modules' // for npm 2
