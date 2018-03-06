@@ -1,3 +1,4 @@
+// @flow
 import _assign from 'lodash-es/assign';
 import _difference from 'lodash-es/difference';
 import _includes from 'lodash-es/includes';
@@ -6,14 +7,27 @@ import _without from 'lodash-es/without';
 import { debug } from '../index';
 import { utilGetPrototypeOf } from '../util';
 
+// These are Type Aliases for Flow
+// As we use graph & entity in a lot of places, we export them from here
+// Note that this is a work in progress, along with all of the Flow annotations, so please add properties/methods as required
+import type { entityType } from '../osm/entity';
+export type coreGraphType = {
+    hasEntity: (id: string) => entityType,
+    entities: { [id: string]: entityType },
+    _parentWays: { [any]: any },
+    _parentRels: { [any]: any }
+};
 
-export function coreGraph(other, mutable) {
+export function coreGraph(other: any, mutable: any): any {
     if (!(this instanceof coreGraph)) return new coreGraph(other, mutable);
 
     if (other instanceof coreGraph) {
         var base = other.base();
+        // $FlowFixMe - need to understand how to deal with constructor funcs
         this.entities = _assign(Object.create(base.entities), other.entities);
+        // $FlowFixMe - need to understand how to deal with constructor funcs
         this._parentWays = _assign(Object.create(base.parentWays), other._parentWays);
+        // $FlowFixMe - need to understand how to deal with constructor funcs
         this._parentRels = _assign(Object.create(base.parentRels), other._parentRels);
 
     } else {
@@ -31,12 +45,12 @@ export function coreGraph(other, mutable) {
 
 coreGraph.prototype = {
 
-    hasEntity: function(id) {
+    hasEntity: function (id: string): entityType {
         return this.entities[id];
     },
 
 
-    entity: function(id) {
+    entity: function (id) {
         var entity = this.entities[id];
 
         //https://github.com/openstreetmap/iD/issues/3973#issuecomment-307052376
@@ -51,10 +65,10 @@ coreGraph.prototype = {
     },
 
 
-    transient: function(entity, key, fn) {
+    transient: function (entity, key, fn) {
         var id = entity.id,
             transients = this.transients[id] ||
-            (this.transients[id] = {});
+                (this.transients[id] = {});
 
         if (transients[key] !== undefined) {
             return transients[key];
@@ -66,7 +80,7 @@ coreGraph.prototype = {
     },
 
 
-    parentWays: function(entity) {
+    parentWays: function (entity) {
         var parents = this._parentWays[entity.id],
             result = [];
 
@@ -79,19 +93,19 @@ coreGraph.prototype = {
     },
 
 
-    isPoi: function(entity) {
+    isPoi: function (entity) {
         var parentWays = this._parentWays[entity.id];
         return !parentWays || parentWays.length === 0;
     },
 
 
-    isShared: function(entity) {
+    isShared: function (entity) {
         var parentWays = this._parentWays[entity.id];
         return parentWays && parentWays.length > 1;
     },
 
 
-    parentRelations: function(entity) {
+    parentRelations: function (entity) {
         var parents = this._parentRels[entity.id],
             result = [];
 
@@ -104,7 +118,7 @@ coreGraph.prototype = {
     },
 
 
-    childNodes: function(entity) {
+    childNodes: function (entity) {
         if (this._childNodes[entity.id]) return this._childNodes[entity.id];
         if (!entity.nodes) return [];
 
@@ -120,7 +134,7 @@ coreGraph.prototype = {
     },
 
 
-    base: function() {
+    base: function () {
         return {
             'entities': utilGetPrototypeOf(this.entities),
             'parentWays': utilGetPrototypeOf(this._parentWays),
@@ -133,7 +147,7 @@ coreGraph.prototype = {
     // is used only during the history operation that merges newly downloaded
     // data into each state. To external consumers, it should appear as if the
     // graph always contained the newly downloaded data.
-    rebase: function(entities, stack, force) {
+    rebase: function (entities: entityType[], stack: any, force?: boolean) {
         var base = this.base(),
             i, j, k, id;
 
@@ -167,7 +181,7 @@ coreGraph.prototype = {
     },
 
 
-    _updateRebased: function() {
+    _updateRebased: function () {
         var base = this.base(),
             i, k, child, id, keys;
 
@@ -205,13 +219,15 @@ coreGraph.prototype = {
 
 
     // Updates calculated properties (parentWays, parentRels) for the specified change
-    _updateCalculated: function(oldentity, entity, parentWays, parentRels) {
+    _updateCalculated: function (oldentity?: entityType, entity: entityType, parentWays, parentRels) {
 
         parentWays = parentWays || this._parentWays;
         parentRels = parentRels || this._parentRels;
 
         var type = entity && entity.type || oldentity && oldentity.type,
-            removed, added, ways, rels, i;
+            ways, rels, i;
+        var removed = [];
+        var added = [];
 
 
         if (type === 'way') {
@@ -228,6 +244,7 @@ coreGraph.prototype = {
                 added = entity.nodes;
             }
             for (i = 0; i < removed.length; i++) {
+                // $FlowFixMe - need to update code to handle undefined value for oldentity (eg line 162 above)
                 parentWays[removed[i]] = _without(parentWays[removed[i]], oldentity.id);
             }
             for (i = 0; i < added.length; i++) {
@@ -250,6 +267,7 @@ coreGraph.prototype = {
                 added = entity.members;
             }
             for (i = 0; i < removed.length; i++) {
+                // $FlowFixMe - need to update code to handle undefined value for oldentity (eg line 162 above)
                 parentRels[removed[i].id] = _without(parentRels[removed[i].id], oldentity.id);
             }
             for (i = 0; i < added.length; i++) {
@@ -261,40 +279,40 @@ coreGraph.prototype = {
     },
 
 
-    replace: function(entity) {
+    replace: function (entity) {
         if (this.entities[entity.id] === entity)
             return this;
 
-        return this.update(function() {
+        return this.update(function () {
             this._updateCalculated(this.entities[entity.id], entity);
             this.entities[entity.id] = entity;
         });
     },
 
 
-    remove: function(entity) {
-        return this.update(function() {
+    remove: function (entity) {
+        return this.update(function () {
             this._updateCalculated(entity, undefined);
             this.entities[entity.id] = undefined;
         });
     },
 
 
-    revert: function(id) {
+    revert: function (id) {
         var baseEntity = this.base().entities[id],
             headEntity = this.entities[id];
 
         if (headEntity === baseEntity)
             return this;
 
-        return this.update(function() {
+        return this.update(function () {
             this._updateCalculated(headEntity, baseEntity);
             delete this.entities[id];
         });
     },
 
 
-    update: function() {
+    update: function () {
         var graph = this.frozen ? coreGraph(this, true) : this;
 
         for (var i = 0; i < arguments.length; i++) {
@@ -308,7 +326,7 @@ coreGraph.prototype = {
 
 
     // Obliterates any existing entities
-    load: function(entities) {
+    load: function (entities) {
         var base = this.base();
         this.entities = Object.create(base.entities);
 

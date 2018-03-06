@@ -1,3 +1,4 @@
+// @flow
 import _clone from 'lodash-es/clone';
 import _keys from 'lodash-es/keys';
 import _toPairs from 'lodash-es/toPairs';
@@ -8,8 +9,16 @@ import { debug } from '../index';
 import { osmIsInterestingTag } from './tags';
 import { dataDeprecated } from '../../data/index';
 
+// Type Alias which is used in graph.js & elsewehere
+export type entityType = {
+    id: string,
+    type: string,
+    tags: { [tagName: string]: string }, // This allows a map-style object (https://flow.org/en/docs/types/objects/#toc-objects-as-maps) - the "tagName" is informational
+    members: entityType[],
+    nodes: string[]
+};
 
-export function osmEntity(attrs) {
+export function osmEntity(attrs: any) {
     // For prototypal inheritance.
     if (this instanceof osmEntity) return;
 
@@ -25,7 +34,7 @@ export function osmEntity(attrs) {
 }
 
 
-osmEntity.id = function(type) {
+osmEntity.id = function (type) {
     return osmEntity.id.fromOSM(type, osmEntity.id.next[type]--);
 };
 
@@ -35,23 +44,23 @@ osmEntity.id.next = {
 };
 
 
-osmEntity.id.fromOSM = function(type, id) {
+osmEntity.id.fromOSM = function (type, id) {
     return type[0] + id;
 };
 
 
-osmEntity.id.toOSM = function(id) {
+osmEntity.id.toOSM = function (id) {
     return id.slice(1);
 };
 
 
-osmEntity.id.type = function(id) {
+osmEntity.id.type = function (id) {
     return { 'c': 'changeset', 'n': 'node', 'w': 'way', 'r': 'relation' }[id[0]];
 };
 
 
 // A function suitable for use as the second argument to d3.selection#data().
-osmEntity.key = function(entity) {
+osmEntity.key = function (entity) {
     return entity.id + 'v' + (entity.v || 0);
 };
 
@@ -61,7 +70,7 @@ osmEntity.prototype = {
     tags: {},
 
 
-    initialize: function(sources) {
+    initialize: function (sources: any) {
         for (var i = 0; i < sources.length; ++i) {
             var source = sources[i];
             for (var prop in source) {
@@ -95,33 +104,35 @@ osmEntity.prototype = {
     },
 
 
-    copy: function(resolver, copies) {
+    copy: function (resolver, copies) {
         if (copies[this.id])
             return copies[this.id];
 
-        var copy = osmEntity(this, {id: undefined, user: undefined, version: undefined});
+        // $FlowFixMe - need to understand the osmEntity method
+        var copy = osmEntity(this, { id: undefined, user: undefined, version: undefined });
         copies[this.id] = copy;
 
         return copy;
     },
 
 
-    osmId: function() {
+    osmId: function () {
         return osmEntity.id.toOSM(this.id);
     },
 
 
-    isNew: function() {
+    isNew: function () {
         return this.osmId() < 0;
     },
 
 
-    update: function(attrs) {
-        return osmEntity(this, attrs, {v: 1 + (this.v || 0)});
+    update: function (attrs) {
+        // $FlowFixMe - need to understand the osmEntity method
+        return osmEntity(this, attrs, { v: 1 + (this.v || 0) });
     },
 
 
-    mergeTags: function(tags) {
+    mergeTags: function (tags) {
         var merged = _clone(this.tags), changed = false;
         for (var k in tags) {
             var t1 = merged[k],
@@ -134,41 +145,41 @@ osmEntity.prototype = {
                 merged[k] = _union(t1.split(/;\s*/), t2.split(/;\s*/)).join(';');
             }
         }
-        return changed ? this.update({tags: merged}) : this;
+        return changed ? this.update({ tags: merged }) : this;
     },
 
 
-    intersects: function(extent, resolver) {
+    intersects: function (extent, resolver) {
         return this.extent(resolver).intersects(extent);
     },
 
 
-    isUsed: function(resolver) {
+    isUsed: function (resolver) {
         return _without(Object.keys(this.tags), 'area').length > 0 ||
             resolver.parentRelations(this).length > 0;
     },
 
 
-    hasInterestingTags: function() {
+    hasInterestingTags: function () {
         return _keys(this.tags).some(osmIsInterestingTag);
     },
 
 
-    isHighwayIntersection: function() {
+    isHighwayIntersection: function () {
         return false;
     },
 
-    isDegenerate: function() {
+    isDegenerate: function () {
         return true;
     },
 
-    deprecatedTags: function() {
+    deprecatedTags: function () {
         var tags = _toPairs(this.tags);
         var deprecated = {};
 
-        dataDeprecated.forEach(function(d) {
+        dataDeprecated.forEach(function (d) {
             var match = _toPairs(d.old)[0];
-            tags.forEach(function(t) {
+            tags.forEach(function (t) {
                 if (t[0] === match[0] &&
                     (t[1] === match[1] || match[1] === '*')) {
                     deprecated[t[0]] = t[1];
