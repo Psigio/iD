@@ -1,5 +1,5 @@
-// @flow
 import { t } from './locale';
+//@ts-ignore - see https://github.com/microsoft/typescript/issues/3019
 import { utilDetect } from './detect';
 
 var OSM_PRECISION = 7;
@@ -140,7 +140,7 @@ function displayCoordinate(deg: number, pos: any, neg: any): string {
 	} else {
 		return t('units.coordinate', {
 			coordinate: displayCoordinate,
-			direction: t('units.' + (deg > 0 ? pos : neg))
+			direction: t('units.' + (deg > 0 ? pos : neg), null)
 		});
 	}
 }

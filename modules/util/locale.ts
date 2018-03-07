@@ -1,4 +1,3 @@
-// @flow
 var translations = Object.create(null);
 
 export var currentLocale = 'en';
