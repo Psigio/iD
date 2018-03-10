@@ -1,7 +1,7 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "es2015",
         "noImplicitAny": true,
         "sourceMap": true,
         "target": "es5",
@@ -9,7 +9,8 @@
         "removeComments": true,
         "noLib": false,
         "preserveConstEnums": true,
-        "allowJs": false
+        "allowJs": false,
+        "pretty": true
     },
     "include": [
         "modules/**/*.ts"
