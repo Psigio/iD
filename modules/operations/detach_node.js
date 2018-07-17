@@ -2,6 +2,7 @@ import { actionDetachNode } from '../actions/index';
 import { behaviorOperation } from '../behavior/index';
 import { modeMove } from '../modes/index';
 import { t } from '../util/locale';
+import { check } from '../util';
 
 export function operationDetachNode(selectedIDs, context) {
     var selectedNode = selectedIDs[0];
@@ -46,5 +47,11 @@ export function operationDetachNode(selectedIDs, context) {
     operation.keys = [t('operations.detachNode.key')];
     operation.title = t('operations.detachNode.title');
     operation.behavior = behaviorOperation(context).which(operation);
+
+    operation.disabled = function () {
+        var graph = context.graph();
+        return check(nodeIDs, graph);
+    };
+
     return operation;
 }
