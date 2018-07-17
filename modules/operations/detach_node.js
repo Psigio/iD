@@ -50,7 +50,7 @@ export function operationDetachNode(selectedIDs, context) {
 
     operation.disabled = function () {
         var graph = context.graph();
-        return check(nodeIDs, graph);
+        return check(selectedIDs, graph);
     };
 
     return operation;
