@@ -3,6 +3,7 @@ import { behaviorOperation } from '../behavior/index';
 import { modeMove } from '../modes/index';
 import { t } from '../util/locale';
 import _flatMap from 'lodash-es/flatMap';
+import _uniq from 'lodash-es/uniq';
 
 export function operationDetachNode(selectedIDs, context) {
     var selectedNode = selectedIDs[0];
@@ -71,12 +72,12 @@ export function operationDetachNode(selectedIDs, context) {
             });
         }).filter(isNotNull);
 
+        // Get unique list of ids in restrictionViaNodes to simplify checking
+        var viaNodeIds = _uniq(restrictionViaNodes.map(function (r) { return r.id; }));
+
         // Now we have a list of via nodes, we should prevent detachment if the target node is in this list
         var anyVias = nodes.filter(function (n) {
-            var nodeId = n.id;
-            return restrictionViaNodes
-                .map(function (r) { return r.id; })
-                .indexOf(nodeId) !== -1;
+            return viaNodeIds.indexOf(n.id) !== -1;
         });
         if (anyVias.length > 0) {
             // The node is a via, do not permit
