@@ -57,23 +57,44 @@ export function operationDetachNode(selectedIDs, context) {
         // We should prevent the node being detached if it represents a via node of a turn restriction
         var nodes = selectedIDs.map(function (i) { return graph.entity(i); });
         // Get all via nodes of restrictions involving the target nodes
-        var restrictionViaNodes = _flatMap(nodes, function (node) {
-            // Get the relations that this node belongs to
-            var relationsForNode = graph.parentRelations(node);
+        var restrictionViaNodeIds = _flatMap(nodes, function (node) {
+            // Get the relations that this node belongs to and the relations any way the node belongs to
+            var relationsFromNode = graph.parentRelations(node);
+            var relationsFromWays = graph.parentWays(node).reduce(function (acc, parentWay) {
+                // Get all of the relations from the way
+                var wayRelations = graph.parentRelations(parentWay);
+                return acc.concat(_flatMap(wayRelations, function (r) { return r; }));
+            }, []);
+            var allRelations = relationsFromNode.concat(relationsFromWays);
             // Check each relation in turn
-            return _flatMap(relationsForNode, function (relation) {
+            return _flatMap(allRelations, function (relation) {
                 // Check to see if this is a restriction relation, if not return null
                 if (!relation.isValidRestriction()) {
                     return null;
                 }
-                // We have identified that it is a restriction, extract the via nodes
-                var viaNodes = relation.members.filter(function (m) { return m.role === 'via'; });
+                // We have identified that it is a restriction, extract the via members
+                var viaMembers = relation.members.filter(function (m) { return m.role === 'via'; });
+                // As via members can be either nodes or ways, we need to expand those ways out to their constituent nodes
+                var viaNodes = _flatMap(viaMembers, function (member) {
+                    if (member.type === 'node') {
+                        return member.id;
+                    }
+                    if (member.type === 'way') {
+                        // Get all of the nodes from the way
+                        var way = graph.entity(member.id);
+                        return _flatMap(way.nodes, function (wayMemberId) {
+                            return wayMemberId;
+                        });
+                    }
+                    // Unhandled type
+                    return null;
+                });
                 return viaNodes;
             });
         }).filter(isNotNull);
 
         // Get unique list of ids in restrictionViaNodes to simplify checking
-        var viaNodeIds = _uniq(restrictionViaNodes.map(function (r) { return r.id; }));
+        var viaNodeIds = _uniq(restrictionViaNodeIds);
 
         // Now we have a list of via nodes, we should prevent detachment if the target node is in this list
         var anyVias = nodes.filter(function (n) {
