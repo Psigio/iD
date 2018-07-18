@@ -2,7 +2,7 @@ import { actionDetachNode } from '../actions/index';
 import { behaviorOperation } from '../behavior/index';
 import { modeMove } from '../modes/index';
 import { t } from '../util/locale';
-import { check } from '../util';
+import _flatMap from 'lodash-es/flatMap';
 
 export function operationDetachNode(selectedIDs, context) {
     var selectedNode = selectedIDs[0];
@@ -38,7 +38,10 @@ export function operationDetachNode(selectedIDs, context) {
         return false;
     };
     operation.tooltip = function () {
-        return t('operations.detachNode.description');
+        var disableReason = operation.disabled();
+        return disableReason
+            ? t('operations.detachNode.' + disableReason)
+            : t('operations.detachNode.description');
     };
     operation.annotation = function () {
         return t('operations.detachNode.annotation');
@@ -50,8 +53,42 @@ export function operationDetachNode(selectedIDs, context) {
 
     operation.disabled = function () {
         var graph = context.graph();
-        return check(selectedIDs, graph);
+        // We should prevent the node being detached if it represents a via node of a turn restriction
+        var nodes = selectedIDs.map(function (i) { return graph.entity(i); });
+        // Get all via nodes of restrictions involving the target nodes
+        var restrictionViaNodes = _flatMap(nodes, function (node) {
+            // Get the relations that this node belongs to
+            var relationsForNode = graph.parentRelations(node);
+            // Check each relation in turn
+            return _flatMap(relationsForNode, function (relation) {
+                // Check to see if this is a restriction relation, if not return null
+                if (!relation.isValidRestriction()) {
+                    return null;
+                }
+                // We have identified that it is a restriction, extract the via nodes
+                var viaNodes = relation.members.filter(function (m) { return m.role === 'via'; });
+                return viaNodes;
+            });
+        }).filter(isNotNull);
+
+        // Now we have a list of via nodes, we should prevent detachment if the target node is in this list
+        var anyVias = nodes.filter(function (n) {
+            var nodeId = n.id;
+            return restrictionViaNodes
+                .map(function (r) { return r.id; })
+                .indexOf(nodeId) !== -1;
+        });
+        if (anyVias.length > 0) {
+            // The node is a via, do not permit
+            return 'via_restriction';
+        }
+        // We are ok to proceed
+        return false;
     };
 
     return operation;
+}
+
+function isNotNull(item) {
+    return item !== null;
 }

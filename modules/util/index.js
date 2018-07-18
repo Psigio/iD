@@ -25,4 +25,3 @@ export { utilSuggestNames } from './suggest_names';
 export { utilTagText } from './util';
 export { utilTriggerEvent } from './trigger_event';
 export { utilWrap } from './util';
-export { check } from './node_restriction_check';
