@@ -6,7 +6,6 @@ import _flatMap from 'lodash-es/flatMap';
 import _uniq from 'lodash-es/uniq';
 
 export function operationDetachNode(selectedIDs, context) {
-    const nodeString = 'node';
     var selectedNode = selectedIDs[0];
     var operation = function () {
         context.perform(actionDetachNode(selectedNode));
@@ -28,7 +27,7 @@ export function operationDetachNode(selectedIDs, context) {
             return false;
         }
         // Confirm entity is a node with tags
-        if (entity.type === nodeString && hasTags(entity)) {
+        if (entity.type === 'node' && hasTags(entity)) {
             // Confirm that the node is owned by at least 1 parent way
             var parentWays = graph.parentWays(entity);
             return parentWays && parentWays.length > 0;
@@ -78,7 +77,7 @@ export function operationDetachNode(selectedIDs, context) {
                 // does not change and therefore the relation will not be affected).  Therefore we 
                 // only need to examine the standalone nodes
                 return relation.members.filter(function (m) {
-                    return (m.role === 'via' || m.role === 'location_hint') && m.type === nodeString;
+                    return (m.role === 'via' || m.role === 'location_hint') && m.type === 'node';
                 }).map(function (m) { return m.id; });
             });
         }).filter(isNotNullOrUndefined);
