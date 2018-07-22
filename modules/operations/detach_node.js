@@ -57,41 +57,39 @@ export function operationDetachNode(selectedIDs, context) {
         // We should prevent the node being detached if it represents a via node of a turn restriction
         var nodes = selectedIDs.map(function (i) { return graph.entity(i); });
         // Get all via nodes of restrictions involving the target nodes
-        var restrictionViaNodeIds = _flatMap(nodes, function (node) {
+        var restrictionNodeIds = _flatMap(nodes, function (node) {
             // Get the relations that this node belongs to
             var relationsFromNode = graph.parentRelations(node);
             // Check each relation in turn
             return _flatMap(relationsFromNode, function (relation) {
                 // Check to see if this is a restriction relation, if not return null
                 if (!relation.isValidRestriction()) {
-                    console.log('nul');
                     return null;
                 }
-                // We have identified that it is a restriction, extract the via members
-                // The via members can be either nodes or ways.  Ways do not prevent us removing a node
+                // We have identified that it is a restriction.
+                // https://wiki.openstreetmap.org/wiki/Relation:restriction indicates that
+                // from & to roles are only appropriate for Ways                
+                // The via members can be either nodes or ways.  Via-Ways do not prevent us removing a node
                 // from within them, as it is the way itself which is in the relation with the via role,
                 // and not the consitutent nodes (so if we switch out a constituent node, the way id
                 // does not change and therefore the relation will not be affected).  Therefore we 
                 // only need to examine the standalone nodes
-                var viaNodes = relation.members.filter(function (m) { return m.role === 'via' && m.type === 'node'; })
-                    .map(function (m) { return m.id; });
-                // As this operation only works on Nodes, we only need to check the via role
-                // https://wiki.openstreetmap.org/wiki/Relation:restriction indicates that
-                // from & to roles are only appropriate for Ways
-                // TODO: add logic for location_hint nodes also
-                return viaNodes;
+                var potentialIds = relation.members.filter(function (m) {
+                    return (m.role === 'via' || m.role === 'location_hint') && m.type === 'node';
+                }).map(function (m) { return m.id; });
+                return potentialIds;
             });
         }).filter(function (i) { return i !== null; });
 
-        // Get unique list of ids in restrictionViaNodes to simplify checking
-        var viaNodeIds = _uniq(restrictionViaNodeIds);
+        // Get unique list of ids in restrictionNodeIds to simplify checking
+        var nodeIds = _uniq(restrictionNodeIds);
 
-        // Now we have a list of via nodes, we should prevent detachment if the target node is in this list
-        var anyVias = nodes.filter(function (n) {
-            return viaNodeIds.indexOf(n.id) !== -1;
+        // Now we have a list of via/location_hint nodes, we should prevent detachment if the target node is in this list
+        var anyInhibits = nodes.filter(function (n) {
+            return nodeIds.indexOf(n.id) !== -1;
         });
-        if (anyVias.length > 0) {
-            // The node is a via, do not permit
+        if (anyInhibits.length > 0) {
+            // The node is a via/location_hint, do not permit
             return 'via_restriction';
         }
         // We are ok to proceed

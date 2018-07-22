@@ -175,5 +175,72 @@ describe('iD.operationDetachNode', function () {
             var result = iD.operationDetachNode(['d'], fakeContext).disabled();
             expect(result).not.to.eql(false);
         });
+
+        it('returns not-enabled for location_hint node in restriction', function () {
+            // https://wiki.openstreetmap.org/wiki/Relation:restriction indicates that
+            // from & to roles are only appropriate for Ways
+            graph = iD.Graph([
+                iD.Node(createFakeNode('a', false)),
+                iD.Node(createFakeNode('b', false)),
+                iD.Node(createFakeNode('c', false)),
+                iD.Node(createFakeNode('d', true)),
+                iD.Node(createFakeNode('e', false)),
+                iD.Node(createFakeNode('f', false)),
+                iD.Node(createFakeNode('g', false)),
+                iD.Way({ id: 'x', nodes: ['a', 'b'] }),
+                iD.Way({ id: 'y', nodes: ['e', 'f', 'g'] }),
+                iD.Relation({
+                    id: 'r',
+                    tags: {
+                        type: 'restriction',
+                        restriction: 'no_right_turn'
+                    },
+                    members: [
+                        { id: 'x', type: 'way', role: 'from' },
+                        { id: 'c', type: 'node', role: 'via' },
+                        { id: 'd', type: 'node', role: 'location_hint' },
+                        { id: 'z', type: 'way', role: 'to' }
+                    ]
+                })
+            ]);
+            var result = iD.operationDetachNode(['d'], fakeContext).disabled();
+            expect(result).not.to.eql(false);
+        });
+
+        it('returns not-enabled for location_hint node in restriction and other non-restriction relation', function () {
+            graph = iD.Graph([
+                iD.Node(createFakeNode('a', false)),
+                iD.Node(createFakeNode('b', false)),
+                iD.Node(createFakeNode('c', false)),
+                iD.Node(createFakeNode('d', true)),
+                iD.Node(createFakeNode('e', false)),
+                iD.Node(createFakeNode('f', false)),
+                iD.Node(createFakeNode('g', false)),
+                iD.Way({ id: 'x', nodes: ['a', 'b'] }),
+                iD.Way({ id: 'y', nodes: ['e', 'f', 'g'] }),
+                iD.Relation({
+                    id: 'r',
+                    tags: {
+                        type: 'restriction',
+                        restriction: 'no_right_turn'
+                    },
+                    members: [
+                        { id: 'x', type: 'way', role: 'from' },
+                        { id: 'c', type: 'node', role: 'via' },
+                        { id: 'd', type: 'node', role: 'location_hint' },
+                        { id: 'z', type: 'way', role: 'to' }
+                    ]
+                }),
+                iD.Relation({
+                    id: 's',
+                    members: [
+                        { id: 'x', type: 'way' },
+                        { id: 'd', type: 'node' },
+                    ]
+                })
+            ]);
+            var result = iD.operationDetachNode(['d'], fakeContext).disabled();
+            expect(result).not.to.eql(false);
+        });
     });
 });
