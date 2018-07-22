@@ -58,40 +58,30 @@ export function operationDetachNode(selectedIDs, context) {
         var nodes = selectedIDs.map(function (i) { return graph.entity(i); });
         // Get all via nodes of restrictions involving the target nodes
         var restrictionViaNodeIds = _flatMap(nodes, function (node) {
-            // Get the relations that this node belongs to and the relations any way the node belongs to
+            // Get the relations that this node belongs to
             var relationsFromNode = graph.parentRelations(node);
-            var relationsFromWays = graph.parentWays(node).reduce(function (acc, parentWay) {
-                // Get all of the relations from the way
-                var wayRelations = graph.parentRelations(parentWay);
-                return acc.concat(_flatMap(wayRelations, function (r) { return r; }));
-            }, []);
-            var allRelations = relationsFromNode.concat(relationsFromWays);
             // Check each relation in turn
-            return _flatMap(allRelations, function (relation) {
+            return _flatMap(relationsFromNode, function (relation) {
                 // Check to see if this is a restriction relation, if not return null
                 if (!relation.isValidRestriction()) {
+                    console.log('nul');
                     return null;
                 }
                 // We have identified that it is a restriction, extract the via members
-                var viaMembers = relation.members.filter(function (m) { return m.role === 'via'; });
-                // As via members can be either nodes or ways, we need to expand those ways out to their constituent nodes
-                var viaNodes = _flatMap(viaMembers, function (member) {
-                    if (member.type === 'node') {
-                        return member.id;
-                    }
-                    if (member.type === 'way') {
-                        // Get all of the nodes from the way
-                        var way = graph.entity(member.id);
-                        return _flatMap(way.nodes, function (wayMemberId) {
-                            return wayMemberId;
-                        });
-                    }
-                    // Unhandled type
-                    return null;
-                });
+                // The via members can be either nodes or ways.  Ways do not prevent us removing a node
+                // from within them, as it is the way itself which is in the relation with the via role,
+                // and not the consitutent nodes (so if we switch out a constituent node, the way id
+                // does not change and therefore the relation will not be affected).  Therefore we 
+                // only need to examine the standalone nodes
+                var viaNodes = relation.members.filter(function (m) { return m.role === 'via' && m.type === 'node'; })
+                    .map(function (m) { return m.id; });
+                // As this operation only works on Nodes, we only need to check the via role
+                // https://wiki.openstreetmap.org/wiki/Relation:restriction indicates that
+                // from & to roles are only appropriate for Ways
+                // TODO: add logic for location_hint nodes also
                 return viaNodes;
             });
-        }).filter(isNotNull);
+        }).filter(function (i) { return i !== null; });
 
         // Get unique list of ids in restrictionViaNodes to simplify checking
         var viaNodeIds = _uniq(restrictionViaNodeIds);
@@ -107,10 +97,5 @@ export function operationDetachNode(selectedIDs, context) {
         // We are ok to proceed
         return false;
     };
-
     return operation;
-}
-
-function isNotNull(item) {
-    return item !== null;
 }
