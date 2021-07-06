@@ -224,9 +224,17 @@ export function validationImpossibleOneway() {
         if (!context.editable() || !map.trimmedExtent().contains(vertex.loc)) {
             map.zoomToEase(vertex);
         }
-
         context.enter(
+<<<<<<< HEAD
             modeDrawLine(context, way.id, context.graph(), 'line', way.affix(vertex.id), true)
+=======
+            modeDrawLine(context, {
+                wayID: way.id,
+                startGraph: context.graph(),
+                baselineGraph: context.graph(),
+                affix: way.affix(vertex.id)
+            })
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         );
     }
 

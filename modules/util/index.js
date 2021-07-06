@@ -13,7 +13,10 @@ export { utilArrayUniqBy } from './array';
 
 export { utilAsyncMap } from './util';
 export { utilCleanTags } from './clean_tags';
+<<<<<<< HEAD
 export { utilCombinedTags } from './util';
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 export { utilDeepMemberSelector } from './util';
 export { utilDetect } from './detect';
 export { utilDisplayName } from './util';

@@ -67,7 +67,11 @@ export function validationUnsquareWay(context) {
             // use same degree threshold as for detection
             var autoAction = actionOrthogonalize(entity.id, context.projection, undefined, degreeThreshold);
             autoAction.transitionable = false;  // when autofixing, do it instantly
+<<<<<<< HEAD
             autoArgs = [autoAction, t('operations.orthogonalize.annotation.feature', { n: 1 })];
+=======
+            autoArgs = [autoAction, t('operations.orthogonalize.annotation.feature.single')];
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
 
         return [new validationIssue({
@@ -76,11 +80,14 @@ export function validationUnsquareWay(context) {
             severity: 'warning',
             message: function(context) {
                 var entity = context.hasEntity(this.entityIds[0]);
-                return entity ? t.html('issues.unsquare_way.message', { feature: utilDisplayLabel(entity, context.graph()) }) : '';
+                return entity ? t.html('issues.unsquare_way.message', {
+                    feature: utilDisplayLabel(entity, context.graph())
+                }) : '';
             },
             reference: showReference,
             entityIds: [entity.id],
-            hash: JSON.stringify(autoArgs !== undefined) + degreeThreshold,
+<<<<<<< HEAD
+            hash: degreeThreshold,
             dynamicFixes: function() {
                 return [
                     new validationIssueFix({
@@ -115,6 +122,41 @@ export function validationUnsquareWay(context) {
                     */
                 ];
             }
+=======
+            hash: JSON.stringify(autoArgs !== undefined) + degreeThreshold,
+            fixes: [
+                new validationIssueFix({
+                    icon: 'iD-operation-orthogonalize',
+                    title: t('issues.fix.square_feature.title'),
+                    autoArgs: autoArgs,
+                    onClick: function(context, completionHandler) {
+                        var entityId = this.issue.entityIds[0];
+                        // use same degree threshold as for detection
+                        context.perform(
+                            actionOrthogonalize(entityId, context.projection, undefined, degreeThreshold),
+                            t('operations.orthogonalize.annotation.feature.single')
+                        );
+                        // run after the squaring transition (currently 150ms)
+                        window.setTimeout(function() { completionHandler(); }, 175);
+                    }
+                }),
+                /*
+                new validationIssueFix({
+                    title: t('issues.fix.tag_as_unsquare.title'),
+                    onClick: function(context) {
+                        var entityId = this.issue.entityIds[0];
+                        var entity = context.entity(entityId);
+                        var tags = Object.assign({}, entity.tags);  // shallow copy
+                        tags.nonsquare = 'yes';
+                        context.perform(
+                            actionChangeTags(entityId, tags),
+                            t('issues.fix.tag_as_unsquare.annotation')
+                        );
+                    }
+                })
+                */
+            ]
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         })];
 
         function showReference(selection) {

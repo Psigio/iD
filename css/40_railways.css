@@ -1,5 +1,6 @@
 /* railways */
 
+<<<<<<< HEAD
 /* defaults */
 .preset-icon .icon.tag-railway.other-line {
     color: #fff;
@@ -9,6 +10,8 @@
     color: #555;
 }
 
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 /* lines */
 /* narrow widths */
 path.line.shadow.tag-railway {
@@ -53,10 +56,15 @@ path.line.stroke.tag-railway {
 }
 
 
+<<<<<<< HEAD
 .preset-icon .icon.tag-railway.tag-status {
     color: #999;
 }
 path.line.casing.tag-railway.tag-status {
+=======
+path.line.casing.tag-railway-disused,
+path.line.casing.tag-railway-abandoned {
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     stroke: #999;
 }
 path.line.stroke.tag-railway.tag-status:not(.tag-service) {

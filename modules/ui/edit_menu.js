@@ -102,6 +102,7 @@ export function uiEditMenu(context) {
                 utilHighlightEntities(d.relatedEntityIds(), false, context);
             });
 
+<<<<<<< HEAD
         buttonsEnter.each(function(d) {
             var tooltip = uiTooltip()
                 .heading(d.title)
@@ -124,6 +125,15 @@ export function uiEditMenu(context) {
                     return d.title;
                 });
         }
+=======
+        buttonsEnter
+            .append('use')
+            .attr('class', 'operation-icon')
+            .attr('width', '20')
+            .attr('height', '20')
+            .attr('transform', function () { return 'translate(' + [2 * p, 5] + ')'; })
+            .attr('xlink:href', function (d) { return '#iD-operation-' + d.id; });
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         // update
         buttonsEnter
@@ -143,10 +153,27 @@ export function uiEditMenu(context) {
                 if (info.full) updatePosition();
             });
 
+<<<<<<< HEAD
         var lastPointerUpType;
         // `pointerup` is always called before `click`
         function pointerup(d3_event) {
             lastPointerUpType = d3_event.pointerType;
+=======
+        tooltip = d3_select('#id-container')
+            .append('div')
+            .attr('class', 'popover tooltip edit-menu-tooltip');
+
+        tooltip
+            .append('div')
+            .attr('class', 'popover-inner');
+
+
+        function click(operation) {
+            d3_event.stopPropagation();
+            if (operation.disabled()) return;
+            operation();
+            editMenu.close();
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
 
         function click(d3_event, operation) {
@@ -187,7 +214,16 @@ export function uiEditMenu(context) {
 
     function updatePosition() {
 
+<<<<<<< HEAD
         if (!_menu || _menu.empty()) return;
+=======
+            tooltip
+                .style('left', tipX + 'px')
+                .style('top', tipY + 'px')
+                .style('display', 'block')
+                .selectAll('.popover-inner')
+                .html(uiTooltipHtml(d.tooltip(), d.keys[0], d.title));
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         var anchorLoc = context.projection(_anchorLocLonLat);
 

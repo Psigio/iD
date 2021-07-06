@@ -4,6 +4,7 @@ import { behaviorOperation } from '../behavior/operation';
 import { geoSphericalDistance } from '../geo';
 import { modeBrowse } from '../modes/browse';
 import { modeSelect } from '../modes/select';
+import { operationDowngrade } from './downgrade';
 import { uiCmd } from '../ui/cmd';
 import { utilGetAllNodes, utilTotalExtent } from '../util';
 
@@ -65,7 +66,7 @@ export function operationDelete(context, selectedIDs) {
 
 
     operation.available = function() {
-        return true;
+        return !operationDowngrade(selectedIDs, context).available();
     };
 
 

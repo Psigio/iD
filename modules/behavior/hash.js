@@ -180,10 +180,17 @@ export function behaviorHash(context) {
             var q = utilStringQs(window.location.hash);
 
             if (q.id) {
+<<<<<<< HEAD
                 //if (!context.history().hasRestorableChanges()) {
                     // targeting specific features: download, select, and zoom to them
                     context.zoomToEntity(q.id.split(',')[0], !q.map);
                 //}
+=======
+                if (!context.history().hasRestorableChanges()) {
+                    // targeting specific features: download, select, and zoom to them
+                    context.zoomToEntities(q.id.split(','));
+                }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             }
 
             if (q.walkthrough === 'true') {

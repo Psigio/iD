@@ -191,7 +191,6 @@ export function validationDisconnectedWay() {
                     var way = context.hasEntity(wayId);
                     var vertexId = this.entityIds[0];
                     var vertex = context.hasEntity(vertexId);
-
                     if (!way || !vertex) return;
 
                     // make sure the vertex is actually visible and editable
@@ -201,7 +200,16 @@ export function validationDisconnectedWay() {
                     }
 
                     context.enter(
+<<<<<<< HEAD
                         modeDrawLine(context, wayId, context.graph(), 'line', way.affix(vertexId), true)
+=======
+                        modeDrawLine(context, {
+                            wayID: wayId,
+                            startGraph: context.graph(),
+                            baselineGraph: context.graph(),
+                            affix: way.affix(vertexId)
+                        })
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                     );
                 }
             });

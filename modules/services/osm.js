@@ -699,10 +699,15 @@ export default {
         var options = { skipSeen: false };
 
         this.loadFromAPI(
+<<<<<<< HEAD
             '/api/0.6/' + type + '/' + osmID + (type !== 'node' ? '/full' : '') + '.json',
             function(err, entities) {
+=======
+            '/api/0.6/' + type + '/' + osmID + (type !== 'node' ? '/full' : ''),
+            wrapcb(this, function(err, entities) {
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                 if (callback) callback(err, { data: entities });
-            },
+            }, _connectionID),
             options
         );
     },
@@ -747,6 +752,7 @@ export default {
     // Unlike `loadEntity`, child nodes and members are not fetched
     // GET /api/0.6/[nodes|ways|relations]?#parameters
     loadMultiple: function(ids, callback) {
+        var cid = _connectionID;
         var that = this;
         var groups = utilArrayGroupBy(utilArrayUniq(ids), osmEntity.id.type);
 
@@ -757,10 +763,15 @@ export default {
 
             utilArrayChunk(osmIDs, 150).forEach(function(arr) {
                 that.loadFromAPI(
+<<<<<<< HEAD
                     '/api/0.6/' + type + '.json?' + type + '=' + arr.join(),
                     function(err, entities) {
+=======
+                    '/api/0.6/' + type + '?' + type + '=' + arr.join(),
+                    wrapcb(that, function(err, entities) {
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                         if (callback) callback(err, { data: entities });
-                    },
+                    }, cid),
                     options
                 );
             });
@@ -1075,7 +1086,11 @@ export default {
 
         _tileCache.inflight[tile.id] = this.loadFromAPI(
             path + tile.extent.toParam(),
+<<<<<<< HEAD
             tileCallback,
+=======
+            wrapcb(this, tileCallback, _connectionID),
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             options
         );
 

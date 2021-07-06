@@ -72,6 +72,37 @@ export function validationMissingTag(context) {
 
         if (!subtype) return [];
 
+<<<<<<< HEAD
+=======
+        var selectFixType = subtype === 'highway_classification' ? 'select_road_type' : 'select_preset';
+
+        var fixes = [
+            new validationIssueFix({
+                icon: 'iD-icon-search',
+                title: t('issues.fix.' + selectFixType + '.title')/*,
+                onClick: function(context) {
+
+                }*/
+            })
+        ];
+
+        // can always delete if the user created it in the first place..
+        var canDelete = (entity.version === undefined || entity.v !== undefined);
+        fixes.push(
+            new validationIssueFix({
+                icon: 'iD-operation-delete',
+                title: t('issues.fix.delete_feature.title'),
+                onClick: function(context) {
+                    var id = this.issue.entityIds[0];
+                    var operation = operationDelete([id], context);
+                    if (!operation.disabled()) {
+                        operation();
+                    }
+                }
+            })
+        );
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         var messageID = subtype === 'highway_classification' ? 'unknown_road' : 'missing_tag.' + subtype;
         var referenceID = subtype === 'highway_classification' ? 'unknown_road' : 'missing_tag';
 

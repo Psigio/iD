@@ -29,7 +29,16 @@ export function operationContinue(context, selectedIDs) {
     var operation = function() {
         var candidate = _candidates[0];
         context.enter(
+<<<<<<< HEAD
             modeDrawLine(context, candidate.id, context.graph(), 'line', candidate.affix(_vertex.id), true)
+=======
+            modeDrawLine(context, {
+                wayID: candidate.id,
+                startGraph: context.graph(),
+                baselineGraph: context.graph(),
+                affix: candidate.affix(vertex.id)
+            })
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         );
     };
 

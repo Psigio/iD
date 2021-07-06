@@ -206,11 +206,19 @@ export function uiFieldRestrictions(field, context) {
 
         // Reflow warning: `utilGetDimensions` calls `getBoundingClientRect`
         // Instead of asking the restriction-container for its dimensions,
+<<<<<<< HEAD
         //  we can ask the .sidebar, which can have its dimensions cached.
         // width: calc as sidebar - padding
         // height: hardcoded (from `80_app.css`)
         // var d = utilGetDimensions(selection);
         var sdims = utilGetDimensions(context.container().select('.sidebar'));
+=======
+        //  we can ask the .assistant, which can have its dimensions cached.
+        // width: calc as .assistant - padding
+        // height: hardcoded (from `80_app.css`)
+        // var d = utilGetDimensions(selection);
+        var sdims = utilGetDimensions(d3_select('.assistant'));
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         var d = [ sdims[0] - 50, 370 ];
         var c = geoVecScale(d, 0.5);
         var z = 22;
@@ -409,7 +417,11 @@ export function uiFieldRestrictions(field, context) {
             var xPos = -1;
 
             if (minChange) {
+<<<<<<< HEAD
                 xPos = utilGetDimensions(context.container().select('.sidebar'))[0];
+=======
+                xPos = utilGetDimensions(d3_select('.assistant'))[0];
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             }
 
             if (!minChange || (minChange && Math.abs(xPos - _lastXPos) >= minChange)) {

@@ -7,7 +7,11 @@ import { t, localizer } from '../../core/localizer';
 import { uiTooltip } from '../tooltip';
 import { helpHtml } from '../intro/helper';
 
+<<<<<<< HEAD:modules/ui/panes/help.js
 export function uiPaneHelp(context) {
+=======
+    var _pane = d3_select(null);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444:modules/ui/help.js
 
     var docKeys = [
         ['help', [
@@ -271,11 +275,37 @@ export function uiPaneHelp(context) {
         };
     });
 
+<<<<<<< HEAD:modules/ui/panes/help.js
     var helpPane = uiPane('help', context)
         .key(t('help.key'))
         .label(t.html('help.title'))
         .description(t.html('help.title'))
         .iconName('iD-icon-help');
+=======
+    var paneTooltip = tooltip()
+        .placement((textDirection === 'rtl') ? 'right' : 'left')
+        .html(true)
+        .title(uiTooltipHtml(t('help.title'), key));
+
+    function hidePane() {
+        context.ui().togglePanes();
+    }
+
+    uiHelp.togglePane = function() {
+        if (d3_event) d3_event.preventDefault();
+        paneTooltip.hide();
+        context.ui().togglePanes(!_pane.classed('shown') ? _pane : undefined);
+    };
+
+    uiHelp.renderToggleButton = function(selection) {
+
+        selection.append('button')
+            .on('click', uiHelp.togglePane)
+            .call(svgIcon('#iD-icon-help', 'light'))
+            .call(paneTooltip);
+    };
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444:modules/ui/help.js
 
     helpPane.renderContent = function(content) {
 

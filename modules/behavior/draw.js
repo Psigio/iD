@@ -4,7 +4,11 @@ import {
     select as d3_select
 } from 'd3-selection';
 
+<<<<<<< HEAD
 import { presetManager } from '../presets';
+=======
+import { schemaManager } from '../entities/schema_manager';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 import { behaviorEdit } from './edit';
 import { behaviorHover } from './hover';
 import { geoChooseEdge, geoVecLength } from '../geo';
@@ -21,11 +25,17 @@ export function behaviorDraw(context) {
 
     var keybinding = utilKeybinding('draw');
 
+<<<<<<< HEAD
     var _hover = behaviorHover(context)
         .altDisables(true)
         .ignoreVertex(true)
         .on('hover', context.ui().sidebar.hover);
     var _edit = behaviorEdit(context);
+=======
+    var _hover = behaviorHover(context).altDisables(true).ignoreVertex(true);
+    var tail = behaviorTail();
+    var edit = behaviorEdit(context);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     var _closeTolerance = 4;
     var _tolerance = 12;
@@ -152,9 +162,12 @@ export function behaviorDraw(context) {
         _mouseLeave = true;
     }
 
+<<<<<<< HEAD
     function allowsVertex(d) {
         return d.geometry(context.graph()) === 'vertex' || presetManager.allowsVertex(d, context.graph());
     }
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     // related code
     // - `mode/drag_node.js`     `doMove()`
@@ -166,14 +179,30 @@ export function behaviorDraw(context) {
 
         var mode = context.mode();
 
-        if (target && target.type === 'node' && allowsVertex(target)) {   // Snap to a node
-            dispatch.call('clickNode', this, target, d);
-            return;
+        var targetGeometry = target && target.geometry(context.graph());
 
-        } else if (target && target.type === 'way' && (mode.id !== 'add-point' || mode.preset.matchGeometry('vertex'))) {   // Snap to a way
+        if (target && target.type === 'node') {   // Snap to a node
+
+            if (targetGeometry !== 'vertex' && !context.presets().allowsVertex(target, context.graph())) return;
+
+            if (mode.id === 'add-point') {
+                if (!schemaManager.canSnapNodeWithTagsToNode(mode.defaultTags, target, context.graph())) return;
+            }
+
+            dispatch.call('clickNode', this, target, d);
+
+        } else if (target && target.type === 'way') {   // Snap to a way
+
+            if (mode.id === 'add-point') {
+                if (!mode.preset.matchGeometry('vertex')) return;
+
+                if (!schemaManager.canAddNodeWithTagsToWay(mode.defaultTags, target, context.graph())) return;
+            }
+
             var choice = geoChooseEdge(
                 context.graph().childNodes(target), loc, context.projection, context.activeID()
             );
+<<<<<<< HEAD
             if (choice) {
                 var edge = [target.nodes[choice.index - 1], target.nodes[choice.index]];
                 dispatch.call('clickWay', this, choice.loc, edge, d);
@@ -182,6 +211,19 @@ export function behaviorDraw(context) {
         } else if (mode.id !== 'add-point' || mode.preset.matchGeometry('point')) {
             var locLatLng = context.projection.invert(loc);
             dispatch.call('click', this, locLatLng, d);
+=======
+            if (!choice) return;
+
+            var edge = [target.nodes[choice.index - 1], target.nodes[choice.index]];
+
+            dispatch.call('clickWay', this, choice.loc, edge, d);
+
+        } else {
+
+            if (mode.id === 'add-point' && !mode.preset.matchGeometry('point')) return;
+
+            dispatch.call('click', this, context.map().mouseCoordinates(), d);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
 
     }
@@ -270,7 +312,6 @@ export function behaviorDraw(context) {
 
 
     behavior.off = function(selection) {
-        context.ui().sidebar.hover.cancel();
         context.uninstall(_hover);
         context.uninstall(_edit);
 

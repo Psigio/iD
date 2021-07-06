@@ -201,6 +201,7 @@ export function svgImproveOSM(projection, context, dispatch) {
         .style('display', _layerEnabled ? 'block' : 'none')
       .merge(drawLayer);
 
+<<<<<<< HEAD
     if (_layerEnabled) {
       if (service && ~~context.map().zoom() >= minZoom) {
         editOn();
@@ -209,6 +210,111 @@ export function svgImproveOSM(projection, context, dispatch) {
       } else {
         editOff();
       }
+=======
+    // Update the error markers
+    function updateMarkers() {
+        if (!_improveOsmVisible || !_improveOsmEnabled) return;
+
+        var service = getService();
+        var selectedID = context.mode() && context.mode().selectedErrorID && context.mode().selectedErrorID();
+        var data = (service ? service.getErrors(projection) : []);
+        var getTransform = svgPointTransform(projection);
+
+        // Draw markers..
+        var markers = drawLayer.selectAll('.qa_error.improveOSM')
+            .data(data, function(d) { return d.id; });
+
+        // exit
+        markers.exit()
+            .remove();
+
+        // enter
+        var markersEnter = markers.enter()
+            .append('g')
+            .attr('class', function(d) {
+                return [
+                    'qa_error',
+                    d.service,
+                    'error_id-' + d.id,
+                    'error_type-' + d.error_type,
+                    'category-' + d.category
+                ].join(' ');
+            });
+
+        markersEnter
+            .append('polygon')
+            .call(markerPath, 'shadow');
+
+        markersEnter
+            .append('ellipse')
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('rx', 4.5)
+            .attr('ry', 2)
+            .attr('class', 'stroke');
+
+        markersEnter
+            .append('polygon')
+            .attr('fill', 'currentColor')
+            .call(markerPath, 'qa_error-fill');
+
+        markersEnter
+            .append('use')
+            .attr('transform', 'translate(-5.5, -21)')
+            .attr('class', 'icon-annotation')
+            .attr('width', '11px')
+            .attr('height', '11px')
+            .attr('xlink:href', function(d) {
+                var picon = d.icon;
+
+                if (!picon) {
+                    return '';
+                } else {
+                    var isMaki = /^maki-/.test(picon);
+                    return '#' + picon + (isMaki ? '-11' : '');
+                }
+            });
+
+        // update
+        markers
+            .merge(markersEnter)
+            .sort(sortY)
+            .classed('selected', function(d) { return d.id === selectedID; })
+            .attr('transform', getTransform);
+
+
+        // Draw targets..
+        if (touchLayer.empty()) return;
+        var fillClass = context.getDebug('target') ? 'pink ' : 'nocolor ';
+
+        var targets = touchLayer.selectAll('.qa_error.improveOSM')
+            .data(data, function(d) { return d.id; });
+
+        // exit
+        targets.exit()
+            .remove();
+
+        // enter/update
+        targets.enter()
+            .append('rect')
+            .attr('width', '20px')
+            .attr('height', '30px')
+            .attr('x', '-10px')
+            .attr('y', '-28px')
+            .merge(targets)
+            .sort(sortY)
+            .attr('class', function(d) {
+                return 'qa_error ' + d.service + ' target error_id-' + d.id + ' ' + fillClass;
+            })
+            .attr('transform', getTransform);
+
+
+        function sortY(a, b) {
+            return (a.id === selectedID) ? 1
+                : (b.id === selectedID) ? -1
+                : b.loc[1] - a.loc[1];
+        }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     }
   }
 
@@ -230,7 +336,33 @@ export function svgImproveOSM(projection, context, dispatch) {
     return this;
   };
 
+<<<<<<< HEAD
   drawImproveOSM.supported = () => !!getService();
+=======
+    // Toggles the layer on and off
+    drawImproveOSM.enabled = function(val) {
+        if (!arguments.length) return _improveOsmEnabled;
+
+        _improveOsmEnabled = val;
+        if (_improveOsmEnabled) {
+            layerOn();
+        } else {
+            layerOff();
+            if (context.mode().id === 'select-error') {
+                context.enter(modeBrowse(context));
+            }
+        }
+
+        dispatch.call('change');
+        return this;
+    };
+
+
+    drawImproveOSM.supported = function() {
+        return !!getService();
+    };
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
   return drawImproveOSM;
 }

@@ -1,5 +1,6 @@
 import { select as d3_select } from 'd3-selection';
 
+<<<<<<< HEAD:modules/ui/sections/changes.js
 import { presetManager } from '../../presets';
 import { fileFetcher } from '../../core/file_fetcher';
 import { t } from '../../core/localizer';
@@ -9,6 +10,15 @@ import { osmChangeset } from '../../osm';
 import { svgIcon } from '../../svg/icon';
 import { utilDetect } from '../../util/detect';
 import { uiSection } from '../section';
+=======
+import { t } from '../util/locale';
+import { JXON } from '../util/jxon';
+import { actionDiscardTags } from '../actions/discard_tags';
+import { osmChangeset } from '../osm';
+import { svgIcon } from '../svg/icon';
+import { utilDetect } from '../util/detect';
+import { uiDisclosure } from './disclosure';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444:modules/ui/commit_changes.js
 
 import {
     utilDisplayName,
@@ -20,6 +30,7 @@ import {
 export function uiSectionChanges(context) {
     var detected = utilDetect();
 
+<<<<<<< HEAD:modules/ui/sections/changes.js
     var _discardTags = {};
     fileFetcher.get('discarded')
         .then(function(d) { _discardTags = d; })
@@ -34,6 +45,9 @@ export function uiSectionChanges(context) {
         .disclosureContent(renderDisclosureContent);
 
     function renderDisclosureContent(selection) {
+=======
+    function commitChanges(selection) {
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444:modules/ui/commit_changes.js
         var history = context.history();
         var summary = history.difference().summary();
 
@@ -42,17 +56,37 @@ export function uiSectionChanges(context) {
 
         var containerEnter = container.enter()
             .append('div')
+<<<<<<< HEAD:modules/ui/sections/changes.js
             .attr('class', 'commit-section');
 
         containerEnter
             .append('ul')
             .attr('class', 'changeset-list');
+=======
+            .attr('class', 'commit-section modal-section');
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444:modules/ui/commit_changes.js
 
         container = containerEnter
             .merge(container);
 
+        container.call(uiDisclosure(context, 'commit_changes', true)
+            .title(t('commit.changes_parenthetical', { count: summary.length }))
+            .content(render)
+        );
+    }
 
-        var items = container.select('ul').selectAll('li')
+
+    function render(selection) {
+        var history = context.history();
+        var summary = history.difference().summary();
+
+        selection.selectAll('.changeset-list')
+            .data([0])
+            .enter()
+            .append('ul')
+            .attr('class', 'changeset-list');
+
+        var items = selection.select('ul').selectAll('li')
             .data(summary);
 
         var itemsEnter = items.enter()
@@ -110,7 +144,7 @@ export function uiSectionChanges(context) {
         var blob = new Blob([data], {type: 'text/xml;charset=utf-8;'});
         var fileName = 'changes.osc';
 
-        var linkEnter = container.selectAll('.download-changes')
+        var linkEnter = selection.selectAll('.download-changes')
             .data([0])
             .enter()
             .append('a')

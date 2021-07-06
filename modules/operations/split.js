@@ -50,8 +50,18 @@ export function operationSplit(context, selectedIDs) {
     };
 
 
+<<<<<<< HEAD
     operation.available = function() {
         return _isAvailable;
+=======
+    operation.available = function(situation) {
+        if (vertices.length !== 1) return false;
+
+        if (situation === 'toolbar' &&
+            action.disabled(context.graph())) return false;
+
+        return true;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     };
 
 

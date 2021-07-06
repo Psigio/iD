@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { dispatch as d3_dispatch } from 'd3-dispatch';
 import deepEqual from 'fast-deep-equal';
 
@@ -8,6 +9,27 @@ import { modeBrowse } from '../modes/browse';
 import { svgIcon } from '../svg/icon';
 import { utilArrayIdentical } from '../util/array';
 import { utilCleanTags, utilCombinedTags, utilRebind } from '../util';
+=======
+import { event as d3_event, selectAll as d3_selectAll } from 'd3-selection';
+import deepEqual from 'fast-deep-equal';
+
+import { t } from '../util/locale';
+import { tooltip } from '../util/tooltip';
+import { actionChangePreset } from '../actions/change_preset';
+import { actionChangeTags } from '../actions/change_tags';
+import { uiPresetFavoriteButton } from './preset_favorite_button';
+import { uiPresetIcon } from './preset_icon';
+import { uiRawMemberEditor } from './raw_member_editor';
+import { uiRawMembershipEditor } from './raw_membership_editor';
+import { uiRawTagEditor } from './raw_tag_editor';
+import { uiTagReference } from './tag_reference';
+import { uiPresetBrowser } from './preset_browser';
+import { uiPresetEditor } from './preset_editor';
+import { uiEntityIssues } from './entity_issues';
+import { uiSelectionList } from './selection_list';
+import { utilCleanTags } from '../util';
+import { uiViewOnOSM } from './view_on_osm';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 import { uiSectionEntityIssues } from './sections/entity_issues';
 import { uiSectionFeatureType } from './sections/feature_type';
@@ -18,12 +40,12 @@ import { uiSectionRawTagEditor } from './sections/raw_tag_editor';
 import { uiSectionSelectionList } from './sections/selection_list';
 
 export function uiEntityEditor(context) {
-    var dispatch = d3_dispatch('choose');
     var _state = 'select';
     var _coalesceChanges = false;
     var _modified = false;
     var _base;
     var _entityIDs;
+<<<<<<< HEAD
     var _activePresets = [];
     var _newFeature;
 
@@ -33,13 +55,34 @@ export function uiEntityEditor(context) {
 
         var combinedTags = utilCombinedTags(_entityIDs, context.graph());
 
-        // Header
-        var header = selection.selectAll('.header')
+=======
+    var _activePreset;
+    var _tagReference;
+    var _presetFavorite;
+    var _newFeature;
+
+    var selectionList = uiSelectionList(context);
+    var entityIssues = uiEntityIssues(context);
+    var presetEditor = uiPresetEditor(context).on('change', changeTags);
+    var rawTagEditor = uiRawTagEditor(context).on('change', changeTags);
+    var rawMemberEditor = uiRawMemberEditor(context);
+    var rawMembershipEditor = uiRawMembershipEditor(context);
+    var presetBrowser = uiPresetBrowser(context, [], choosePreset);
+
+    function entityEditor(selection) {
+        var entityID = singularEntityID();
+        var entity = entityID && context.entity(entityID);
+        var tags = entity && Object.assign({}, entity.tags);  // shallow copy
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+        // Body
+        var body = selection.selectAll('.inspector-body')
             .data([0]);
 
         // Enter
-        var headerEnter = header.enter()
+        var bodyEnter = body.enter()
             .append('div')
+<<<<<<< HEAD
             .attr('class', 'header fillL');
 
         headerEnter
@@ -55,10 +98,14 @@ export function uiEntityEditor(context) {
 
         headerEnter
             .append('h3');
+=======
+            .attr('class', 'entity-editor inspector-body sep-top');
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         // Update
-        header = header
-            .merge(headerEnter);
+        body = body
+            .merge(bodyEnter);
+<<<<<<< HEAD
 
         header.selectAll('h3')
             .html(_entityIDs.length === 1 ? t.html('inspector.edit') : t.html('inspector.edit_features'));
@@ -77,9 +124,8 @@ export function uiEntityEditor(context) {
             .append('div')
             .attr('class', 'entity-editor inspector-body sep-top');
 
-        // Update
-        body = body
-            .merge(bodyEnter);
+            nameparts.exit()
+                .remove();
 
         if (!_sections) {
             _sections = [
@@ -145,6 +191,18 @@ export function uiEntityEditor(context) {
         }
     }
 
+    function choosePreset(preset) {
+        var entityID = singularEntityID();
+        if (!entityID) return;
+
+        context.perform(
+            actionChangePreset(entityID, _activePreset, preset),
+            t('operations.change_tags.annotation')
+        );
+
+        context.validator().validate();  // rerun validation
+    }
+
 
     // Tag changes that fire on input can all get coalesced into a single
     // history operation when the user leaves the field.  #2342
@@ -182,9 +240,196 @@ export function uiEntityEditor(context) {
                 });
                 return graph;
             };
+=======
+
+        function manageSection(klass, shouldHave, update, create) {
+            var section = body.selectAll('.' + klass.split(' ')[0])
+                .data(shouldHave ? [0] : []);
+
+            section.exit().remove();
+
+            var sectionEnter = section.enter()
+                .append('div')
+                .attr('class', klass);
+
+            if (create && !sectionEnter.empty()) {
+                create(sectionEnter);
+            }
+
+            section = sectionEnter
+                .merge(section);
+
+            if (update && !section.empty()) {
+                update(section);
+            }
+        }
+
+        manageSection('selection-list', _entityIDs.length > 1, function(section) {
+            section
+                .call(selectionList
+                    .setSelectedIDs(_entityIDs)
+                );
+        });
+
+        manageSection('preset-list-item inspector-inner', entityID, function(section) {
+
+            if (_presetFavorite) {
+                section.selectAll('.preset-list-button-wrap .accessory-buttons')
+                    .call(_presetFavorite.button);
+            }
+
+            // update header
+            if (_tagReference) {
+                section.selectAll('.preset-list-button-wrap .accessory-buttons')
+                    .call(_tagReference.button);
+
+                section.selectAll('.preset-list-item')
+                    .call(_tagReference.body);
+            }
+
+            section.selectAll('.preset-reset')
+                .on('click', function() {
+                    if (presetBrowser.isShown()) {
+                        presetBrowser.hide();
+                    } else {
+                        presetBrowser.setAllowedGeometry([context.geometry(entityID)]);
+                        presetBrowser.show();
+                    }
+                })
+                .on('mousedown', function() {
+                    d3_event.preventDefault();
+                    d3_event.stopPropagation();
+                })
+                .on('mouseup', function() {
+                    d3_event.preventDefault();
+                    d3_event.stopPropagation();
+                });
+
+            section.select('.preset-list-item button')
+                .call(uiPresetIcon(context)
+                    .geometry(context.geometry(entityID))
+                    .preset(_activePreset)
+                    .pointMarker(false)
+                );
+
+            // NOTE: split on en-dash, not a hypen (to avoid conflict with hyphenated names)
+            var label = section.select('.label-inner');
+            var nameparts = label.selectAll('.namepart')
+                .data(_activePreset.name().split(' – '), function(d) { return d; });
+
+            nameparts.exit()
+                .remove();
+
+            nameparts
+                .enter()
+                .append('div')
+                .attr('class', 'namepart')
+                .text(function(d) { return d; });
+
+        }, function(sectionEnter) {
+
+            var presetButtonWrap = sectionEnter
+                .append('div')
+                .attr('class', 'preset-list-button-wrap');
+
+            var presetButton = presetButtonWrap.append('button')
+                .attr('class', 'preset-list-button preset-reset')
+                .call(tooltip().title(t('inspector.back_tooltip')).placement('bottom'));
+
+            presetButton
+                .append('div')
+                .attr('class', 'label')
+                .append('div')
+                .attr('class', 'label-inner');
+
+            presetButtonWrap.append('div')
+                .attr('class', 'accessory-buttons');
+
+            presetButtonWrap
+                .call(presetBrowser.scrollContainer(body));
+
+            // start with the preset browser open if the feature is new and untagged
+            if (_newFeature && !entity.hasNonGeometryTags()) {
+                presetBrowser.setAllowedGeometry([context.geometry(entityID)]);
+                presetBrowser.show();
+            }
+
+        });
+
+        manageSection('entity-issues', entityID, function(section) {
+            section
+                .call(entityIssues
+                    .entityID(entityID)
+                );
+        });
+
+        manageSection('preset-editor', entityID, function(section) {
+            section
+                .call(presetEditor
+                    .preset(_activePreset)
+                    .entityID(entityID)
+                    .tags(tags)
+                    .state(_state)
+                );
+        });
+
+        manageSection('raw-tag-editor inspector-inner', true, function(section) {
+            section
+                .call(rawTagEditor
+                    .preset(_activePreset)
+                    .entityIDs(_entityIDs)
+                    .state(_state)
+                );
+        });
+
+        manageSection('raw-member-editor inspector-inner', entity && entity.type === 'relation', function(section) {
+            section
+                .call(rawMemberEditor
+                    .entityID(entityID)
+                );
+        });
+
+        manageSection('raw-membership-editor inspector-inner', entityID, function(section) {
+            section
+                .call(rawMembershipEditor
+                    .entityID(entityID)
+                );
+        });
+
+        manageSection('key-trap-wrap', true, function(section) {
+            section.select('key-trap')
+                .on('keydown.key-trap', function() {
+                // On tabbing, send focus back to the first field on the inspector-body
+                // (probably the `name` field) #4159
+                if (d3_event.keyCode === 9 && !d3_event.shiftKey) {
+                    d3_event.preventDefault();
+                    body.select('input').node().focus();
+                }
+            });
+        }, function(sectionEnter) {
+            sectionEnter
+                .append('input')
+                .attr('type', 'text')
+                .attr('class', 'key-trap');
+        });
+
+        var footer = selection.selectAll('.inspector-footer')
+            .data([0]);
+
+        footer = footer.enter()
+            .append('div')
+            .attr('class', 'inspector-footer')
+            .merge(footer);
+
+        footer
+            .call(uiViewOnOSM(context)
+                .what(entityID && context.hasEntity(entityID))
+            );
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
             var annotation = t('operations.change_tags.annotation');
 
+<<<<<<< HEAD
             if (_coalesceChanges) {
                 context.overwrite(combinedAction, annotation);
             } else {
@@ -215,6 +460,51 @@ export function uiEntityEditor(context) {
             var entity = context.entity(entityID);
             var tags = Object.assign({}, entity.tags);   // shallow copy
 
+=======
+        function historyChanged(difference) {
+            if (selection.selectAll('.entity-editor').empty()) return;
+            if (_state === 'hide') return;
+            var significant = !difference ||
+                    difference.didChange.properties ||
+                    difference.didChange.addition ||
+                    difference.didChange.deletion;
+            if (!significant) return;
+
+            if (!_entityIDs.every(context.hasEntity)) return;
+
+            loadActivePreset();
+
+            var graph = context.graph();
+            entityEditor.modified(_base !== graph);
+            entityEditor(selection);
+        }
+    }
+
+    function choosePreset(preset) {
+        var entityID = singularEntityID();
+        if (!entityID) return;
+
+        context.perform(
+            actionChangePreset(entityID, _activePreset, preset),
+            t('operations.change_tags.annotation')
+        );
+
+        context.validator().validate();  // rerun validation
+    }
+
+
+    // Tag changes that fire on input can all get coalesced into a single
+    // history operation when the user leaves the field.  #2342
+    function changeTags(changed, onInput) {
+
+        var actions = [];
+        for (var i in _entityIDs) {
+            var entityID = _entityIDs[i];
+            var entity = context.entity(entityID);
+
+            var tags = Object.assign({}, entity.tags);   // shallow copy
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             for (var k in changed) {
                 if (!k) continue;
                 var v = changed[k];
@@ -223,13 +513,22 @@ export function uiEntityEditor(context) {
                 }
             }
 
+<<<<<<< HEAD
 
             tags = utilCleanTags(tags);
+=======
+            if (!onInput) {
+                tags = utilCleanTags(tags);
+            }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
             if (!deepEqual(entity.tags, tags)) {
                 actions.push(actionChangeTags(entityID, tags));
             }
+<<<<<<< HEAD
 
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
 
         if (actions.length) {
@@ -246,7 +545,11 @@ export function uiEntityEditor(context) {
                 context.overwrite(combinedAction, annotation);
             } else {
                 context.perform(combinedAction, annotation);
+<<<<<<< HEAD
                 _coalesceChanges = false;
+=======
+                _coalesceChanges = !!onInput;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             }
         }
 
@@ -270,6 +573,7 @@ export function uiEntityEditor(context) {
 
     entityEditor.entityIDs = function(val) {
         if (!arguments.length) return _entityIDs;
+<<<<<<< HEAD
 
         // always reload these even if the entityIDs are unchanged, since we
         // could be reselecting after something like dragging a node
@@ -281,6 +585,15 @@ export function uiEntityEditor(context) {
         _entityIDs = val;
 
         loadActivePresets(true);
+=======
+        if (_entityIDs === val) return entityEditor;  // exit early if no change
+
+        _entityIDs = val;
+        _base = context.graph();
+        _coalesceChanges = false;
+
+        loadActivePreset();
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         return entityEditor
             .modified(false);
@@ -294,6 +607,7 @@ export function uiEntityEditor(context) {
     };
 
 
+<<<<<<< HEAD
     function loadActivePresets(isForNewSelection) {
 
         var graph = context.graph();
@@ -339,4 +653,48 @@ export function uiEntityEditor(context) {
     };
 
     return utilRebind(entityEditor, dispatch, 'on');
+=======
+    function singularEntityID() {
+        if (_entityIDs.length === 1) {
+            return _entityIDs[0];
+        }
+        return null;
+    }
+
+
+    function loadActivePreset() {
+        var entityID = singularEntityID();
+        var entity = entityID && context.hasEntity(entityID);
+        if (!entity) return;
+
+        var graph = context.graph();
+        var match = context.presets().match(entity, graph);
+
+        // A "weak" preset doesn't set any tags. (e.g. "Address")
+        var weakPreset = _activePreset &&
+            Object.keys(_activePreset.addTags || {}).length === 0;
+
+        // Don't replace a weak preset with a fallback preset (e.g. "Point")
+        if ((weakPreset && match.isFallback()) ||
+            // don't reload for same preset
+            match === _activePreset) return;
+
+        if (_activePreset && match.id !== _activePreset.id) {
+            // flash the button to indicate the preset changed
+            d3_selectAll('.entity-editor button.preset-reset .label')
+                .style('background-color', '#fff')
+                .transition()
+                .duration(500)
+                .style('background-color', null);
+        }
+
+        _activePreset = match;
+        _tagReference = uiTagReference(_activePreset.reference(context.geometry(entityID)), context)
+            .showing(false);
+        _presetFavorite = uiPresetFavoriteButton(_activePreset, context.geometry(entityID), context);
+    }
+
+
+    return entityEditor;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 }

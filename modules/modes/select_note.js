@@ -13,7 +13,6 @@ import { modeBrowse } from './browse';
 import { modeDragNode } from './drag_node';
 import { modeDragNote } from './drag_note';
 import { services } from '../services';
-import { uiNoteEditor } from '../ui/note_editor';
 import { utilKeybinding } from '../util';
 
 
@@ -23,6 +22,7 @@ export function modeSelectNote(context, selectedNoteID) {
         button: 'browse'
     };
 
+<<<<<<< HEAD
     var _keybinding = utilKeybinding('select-note');
     var _noteEditor = uiNoteEditor(context)
         .on('change', function() {
@@ -32,6 +32,10 @@ export function modeSelectNote(context, selectedNoteID) {
             context.ui().sidebar
                 .show(_noteEditor.note(note));
         });
+=======
+    var osm = services.osm;
+    var keybinding = utilKeybinding('select-note');
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     var _behaviors = [
         behaviorBreathe(context),
@@ -72,8 +76,6 @@ export function modeSelectNote(context, selectedNoteID) {
         } else {
             selection
                 .classed('selected', true);
-
-            context.selectedNoteID(selectedNoteID);
         }
     }
 
@@ -82,6 +84,10 @@ export function modeSelectNote(context, selectedNoteID) {
         if (context.container().select('.combobox').size()) return;
         context.enter(modeBrowse(context));
     }
+
+    mode.selectedNoteID = function() {
+        return selectedNoteID;
+    };
 
 
     mode.zoomToSelected = function() {
@@ -115,12 +121,15 @@ export function modeSelectNote(context, selectedNoteID) {
 
         selectNote();
 
+<<<<<<< HEAD
         var sidebar = context.ui().sidebar;
         sidebar.show(_noteEditor.note(note).newNote(_newFeature));
 
         // expand the sidebar, avoid obscuring the note if needed
         sidebar.expand(sidebar.intersects(note.extent()));
 
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         context.map()
             .on('drawn.select', selectNote);
     };
@@ -138,11 +147,6 @@ export function modeSelectNote(context, selectedNoteID) {
 
         context.map()
             .on('drawn.select', null);
-
-        context.ui().sidebar
-            .hide();
-
-        context.selectedNoteID(null);
     };
 
 

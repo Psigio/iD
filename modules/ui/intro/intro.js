@@ -41,6 +41,7 @@ const chapterFlow = [
 
 
 export function uiIntro(context) {
+<<<<<<< HEAD
   const INTRO_IMAGERY = 'EsriWorldImageryClarity';
   let _introGraph = {};
   let _currChapter;
@@ -54,6 +55,49 @@ export function uiIntro(context) {
           if (!_introGraph[id]) {
             _introGraph[id] = osmEntity(localize(dataIntroGraph[id]));
           }
+=======
+    var INTRO_IMAGERY = 'EsriWorldImageryClarity';
+    var introGraph = {};
+    var _currChapter;
+
+    // create entities for intro graph and localize names
+    for (var id in dataIntroGraph) {
+        introGraph[id] = osmEntity(localize(dataIntroGraph[id]));
+    }
+
+
+    function intro(selection) {
+        context.enter(modeBrowse(context));
+
+        // Save current map state
+        var osm = context.connection();
+        var history = context.history().toJSON();
+        var hash = window.location.hash;
+        var center = context.map().center();
+        var zoom = context.map().zoom();
+        var background = context.background().baseLayerSource();
+        var overlays = context.background().overlayLayerSources();
+        var opacity = d3_selectAll('#map .layer-background').style('opacity');
+        var caches = osm && osm.caches();
+        var baseEntities = context.history().graph().base().entities;
+        var countryCode = services.countryCoder.iso1A2Code;
+
+        // Block saving
+        context.inIntro(true);
+
+        // Load semi-real data used in intro
+        if (osm) { osm.toggle(false).reset(); }
+        context.history().reset();
+        context.history().merge(Object.values(coreGraph().load(introGraph).entities));
+        context.history().checkpoint('initial');
+
+        // Setup imagery
+        var imagery = context.background().findSource(INTRO_IMAGERY);
+        if (imagery) {
+            context.background().baseLayerSource(imagery);
+        } else {
+            context.background().bing();
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
         selection.call(startIntro);
       })
@@ -135,9 +179,35 @@ export function uiIntro(context) {
               .classed('next', true);
           }
 
+<<<<<<< HEAD
           // Store walkthrough progress..
           progress.push(chapter);
           prefs('walkthrough_progress', utilArrayUniq(progress).join(';'));
+=======
+        chapters[chapters.length - 1].on('startEditing', function() {
+            // Store walkthrough progress..
+            progress.push('startEditing');
+            context.storage('walkthrough_progress', utilArrayUniq(progress).join(';'));
+
+            // Store if walkthrough is completed..
+            var incomplete = utilArrayDifference(chapterFlow, progress);
+            if (!incomplete.length) {
+                context.storage('walkthrough_completed', 'yes');
+            }
+
+            curtain.remove();
+            navwrap.remove();
+            d3_selectAll('#map .layer-background').style('opacity', opacity);
+            if (osm) { osm.toggle(true).reset().caches(caches); }
+            context.history().reset().merge(Object.values(baseEntities));
+            context.background().baseLayerSource(background);
+            overlays.forEach(function(d) { context.background().toggleOverlayLayer(d); });
+            if (history) { context.history().fromJSON(history, false); }
+            context.map().centerZoom(center, zoom);
+            window.location.replace(hash);
+            services.countryCoder.iso1A2Code = countryCode;
+            context.inIntro(false);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         });
       return s;
     });

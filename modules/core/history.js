@@ -18,8 +18,14 @@ export function coreHistory(context) {
     var dispatch = d3_dispatch('reset', 'change', 'merge', 'restore', 'undone', 'redone');
     var lock = utilSessionMutex('lock');
 
+<<<<<<< HEAD
     // restorable if iD not open in another window/tab and a saved history exists in localStorage
     var _hasUnresolvedRestorableChanges = lock.lock() && !!prefs(getKey('saved_history'));
+=======
+    // is iD not open in another window and it detects that
+    // there's a history stored in localStorage that's recoverable?
+    var hasUnresolvedRestorableChanges = lock.lock() && context.storage(getKey('saved_history'));
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     var duration = 150;
     var _imageryUsed = [];
@@ -511,7 +517,10 @@ export function coreHistory(context) {
                 stack: s,
                 nextIDs: osmEntity.id.next,
                 index: _index,
+<<<<<<< HEAD
                 // note the time the changes were saved
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                 timestamp: (new Date()).getTime()
             });
         },
@@ -658,9 +667,15 @@ export function coreHistory(context) {
         save: function() {
             if (lock.locked() &&
                 // don't overwrite existing, unresolved changes
+<<<<<<< HEAD
                 !_hasUnresolvedRestorableChanges) {
 
                 prefs(getKey('saved_history'), history.toJSON() || null);
+=======
+                !hasUnresolvedRestorableChanges) {
+
+                context.storage(getKey('saved_history'), history.toJSON() || null);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             }
             return history;
         },
@@ -669,9 +684,15 @@ export function coreHistory(context) {
         // delete the history version saved in localStorage
         clearSaved: function() {
             context.debouncedSave.cancel();
+<<<<<<< HEAD
             if (lock.locked()) {
                 _hasUnresolvedRestorableChanges = false;
                 prefs(getKey('saved_history'), null);
+=======
+            if (lock.locked())  {
+                hasUnresolvedRestorableChanges = false;
+                context.storage(getKey('saved_history'), null);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
                 // clear the changeset metadata associated with the saved history
                 prefs('comment', null);
@@ -687,18 +708,35 @@ export function coreHistory(context) {
         },
 
 
+<<<<<<< HEAD
         hasRestorableChanges: function() {
             return _hasUnresolvedRestorableChanges;
+=======
+        savedHistoryJSON: function() {
+            return context.storage(getKey('saved_history'));
+        },
+
+
+        hasRestorableChanges: function() {
+            return hasUnresolvedRestorableChanges;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         },
 
 
         // load history from a version stored in localStorage
         restore: function() {
+<<<<<<< HEAD
             if (lock.locked()) {
                 _hasUnresolvedRestorableChanges = false;
                 var json = this.savedHistoryJSON();
                 if (json) history.fromJSON(json, true);
             }
+=======
+            if (!lock.locked()) return;
+            hasUnresolvedRestorableChanges = false;
+            var json = this.savedHistoryJSON();
+            if (json) history.fromJSON(json, true);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         },
 
 

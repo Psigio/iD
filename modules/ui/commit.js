@@ -1,18 +1,29 @@
-import { dispatch as d3_dispatch } from 'd3-dispatch';
 import { select as d3_select } from 'd3-selection';
 import deepEqual from 'fast-deep-equal';
 
+<<<<<<< HEAD
 import { prefs } from '../core/preferences';
 import { t, localizer } from '../core/localizer';
 import { osmChangeset } from '../osm';
-import { svgIcon } from '../svg/icon';
 import { services } from '../services';
 import { uiTooltip } from './tooltip';
+=======
+import { t } from '../util/locale';
+import { modeSelect } from '../modes/select';
+import { modeBrowse } from '../modes/browse';
+import { osmChangeset } from '../osm';
+import { services } from '../services';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 import { uiChangesetEditor } from './changeset_editor';
 import { uiSectionChanges } from './sections/changes';
 import { uiCommitWarnings } from './commit_warnings';
+<<<<<<< HEAD
 import { uiSectionRawTagEditor } from './sections/raw_tag_editor';
 import { utilArrayGroupBy, utilRebind, utilUniqueDomId } from '../util';
+=======
+import { uiRawTagEditor } from './raw_tag_editor';
+import { utilArrayGroupBy } from '../util';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 import { utilDetect } from '../util/detect';
 
 
@@ -37,7 +48,10 @@ var hashtagRegex = /(#[^\u2000-\u206F\u2E00-\u2E7F\s\\'!"#$%()*,.\/:;<=>?@\[\]^`
 
 
 export function uiCommit(context) {
+<<<<<<< HEAD
     var dispatch = d3_dispatch('cancel');
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     var _userDetails;
     var _selection;
 
@@ -203,20 +217,34 @@ export function uiCommit(context) {
         context.changeset = context.changeset.update({ tags: tags });
     }
 
+<<<<<<< HEAD
     function render(selection) {
 
         var osm = context.connection();
         if (!osm) return;
 
-        var header = selection.selectAll('.header')
+        var body = selection.selectAll('.inspector-body')
             .data([0]);
 
-        var headerTitle = header.enter()
+        body = body.enter()
             .append('div')
             .attr('class', 'header fillL');
+=======
+        var body = selection.selectAll('.inspector-body')
+            .data([0]);
 
-        headerTitle
+        body = body.enter()
             .append('div')
+            .attr('class', 'inspector-body sep-top')
+            .merge(body);
+
+        var footer = selection.selectAll('.inspector-footer')
+            .data([0]);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+
+        footer = footer.enter()
+            .append('div')
+<<<<<<< HEAD
             .append('h3')
             .html(t.html('commit.title'));
 
@@ -227,46 +255,145 @@ export function uiCommit(context) {
                 dispatch.call('cancel', this);
             })
             .call(svgIcon('#iD-icon-close'));
+=======
+            .attr('class', 'inspector-footer save-footer fillL')
+            .merge(footer);
 
-        var body = selection.selectAll('.body')
+        // footer buttons section
+        var saveSection = footer.selectAll('.save-section')
             .data([0]);
 
-        body = body.enter()
+        saveSection = saveSection.enter()
             .append('div')
-            .attr('class', 'body')
-            .merge(body);
+            .attr('class','modal-section save-section')
+            .merge(saveSection);
 
+        var uploadBlockerText = getUploadBlockerMessage();
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
-        // Changeset Section
-        var changesetSection = body.selectAll('.changeset-editor')
+        var blockerMessage = saveSection.selectAll('.blocker-message')
             .data([0]);
 
-        changesetSection = changesetSection.enter()
+        blockerMessage = blockerMessage.enter()
             .append('div')
-            .attr('class', 'modal-section changeset-editor')
-            .merge(changesetSection);
+            .attr('class','blocker-message')
+            .merge(blockerMessage);
 
+        blockerMessage
+            .text(uploadBlockerText || '');
+
+        // Buttons
+        var buttonSection = saveSection.selectAll('.buttons')
+            .data([0]);
+
+        // enter
+        var buttonEnter = buttonSection.enter()
+            .append('div')
+            .attr('class', 'buttons');
+
+<<<<<<< HEAD
         changesetSection
             .call(changesetEditor
                 .changesetID(context.changeset.id)
                 .tags(context.changeset.tags)
             );
+=======
+        buttonEnter
+            .append('button')
+            .attr('class', 'secondary-action button cancel-button')
+            .append('span')
+            .attr('class', 'label')
+            .text(t('commit.cancel'));
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+
+        var uploadButton = buttonEnter
+            .append('button')
+            .attr('class', 'action button save-button');
+<<<<<<< HEAD
+
+        uploadButton.append('span')
+            .attr('class', 'label')
+            .text(t('commit.save'));
+
+=======
+
+        uploadButton.append('span')
+            .attr('class', 'label')
+            .text(t('commit.save'));
 
 
-        // Warnings
-        body.call(commitWarnings);
 
+        // update
+        buttonSection = buttonSection
+            .merge(buttonEnter);
 
-        // Upload Explanation
-        var saveSection = body.selectAll('.save-section')
+        buttonSection.selectAll('.cancel-button')
+            .on('click.cancel', function() {
+                var selectedID = commitChanges.entityID();
+                if (selectedID) {
+                    context.enter(modeSelect(context, [selectedID]));
+                } else {
+                    context.enter(modeBrowse(context));
+                }
+            });
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+
+        buttonSection.selectAll('.save-button')
+            .classed('disabled', uploadBlockerText !== null)
+            .on('click.save', function() {
+                if (!d3_select(this).classed('disabled')) {
+                    this.blur();    // avoid keeping focus on the button - #4641
+                    var mode = context.mode();
+                    if (mode.id === 'save' && mode.save) {
+                        mode.save(_changeset);
+                    }
+                }
+            });
+
+<<<<<<< HEAD
+        // update
+        buttonSection = buttonSection
+            .merge(buttonEnter);
+
+        buttonSection.selectAll('.cancel-button')
+            .on('click.cancel', function() {
+                var selectedID = commitChanges.entityID();
+                if (selectedID) {
+                    context.enter(modeSelect(context, [selectedID]));
+                } else {
+                    context.enter(modeBrowse(context));
+                }
+            });
+
+        buttonSection.selectAll('.save-button')
+            .classed('disabled', uploadBlockerText !== null)
+            .on('click.save', function() {
+                if (!d3_select(this).classed('disabled')) {
+                    this.blur();    // avoid keeping focus on the button - #4641
+                    var mode = context.mode();
+                    if (mode.id === 'save' && mode.save) {
+                        mode.save(_changeset);
+                    }
+                }
+            });
+
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+        var overviewSection = body.selectAll('.overview-section')
             .data([0]);
 
-        saveSection = saveSection.enter()
+        // Enter
+        overviewSection = overviewSection.enter()
             .append('div')
+<<<<<<< HEAD
             .attr('class','modal-section save-section fillL')
             .merge(saveSection);
+=======
+            .attr('class', 'overview-section modal-section')
+            .merge(overviewSection);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
-        var prose = saveSection.selectAll('.commit-info')
+        var prose = overviewSection.selectAll('.commit-info')
             .data([0]);
 
         if (prose.enter().size()) {   // first time, make sure to update user details in prose
@@ -309,7 +436,7 @@ export function uiCommit(context) {
 
 
         // Request Review
-        var requestReview = saveSection.selectAll('.request-review')
+        var requestReview = overviewSection.selectAll('.request-review')
             .data([0]);
 
         // Enter
@@ -346,13 +473,13 @@ export function uiCommit(context) {
             .on('change', toggleRequestReview);
 
 
-        // Buttons
-        var buttonSection = saveSection.selectAll('.buttons')
+        // Changeset Section
+        var changesetSection = body.selectAll('.changeset-editor')
             .data([0]);
 
-        // enter
-        var buttonEnter = buttonSection.enter()
+        changesetSection = changesetSection.enter()
             .append('div')
+<<<<<<< HEAD
             .attr('class', 'buttons fillL');
 
         buttonEnter
@@ -403,6 +530,19 @@ export function uiCommit(context) {
             buttonSection.selectAll('.save-button')
                 .call(uiTooltip().title(uploadBlockerTooltipText).placement('top'));
         }
+=======
+            .attr('class', 'modal-section changeset-editor')
+            .merge(changesetSection);
+
+        changesetSection
+            .call(changesetEditor
+                .changesetID(_changeset.id)
+                .tags(tags)
+            );
+
+        // Warnings
+        body.call(commitWarnings);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         // Raw Tag Editor
         var tagSection = body.selectAll('.tag-section.raw-tag-editor')
@@ -449,12 +589,12 @@ export function uiCommit(context) {
             .getIssuesBySeverity({ what: 'edited', where: 'all' }).error;
 
         if (errors.length) {
-            return t('commit.outstanding_errors_message', { count: errors.length });
+            return t('commit.blocker_message.outstanding_errors', { count: errors.length });
 
         } else {
             var hasChangesetComment = context.changeset && context.changeset.tags.comment && context.changeset.tags.comment.trim().length;
             if (!hasChangesetComment) {
-                return t('commit.comment_needed_message');
+                return t('commit.blocker_message.comment_needed');
             }
         }
         return null;
@@ -606,10 +746,14 @@ export function uiCommit(context) {
     }
 
 
+<<<<<<< HEAD
     commit.reset = function() {
         context.changeset = null;
     };
 
 
     return utilRebind(commit, dispatch, 'on');
+=======
+    return commit;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 }

@@ -99,6 +99,7 @@ export function utilEntityAndDeepMemberIDs(ids, graph) {
     var seen = new Set();
     ids.forEach(collectDeepDescendants);
     return Array.from(seen);
+<<<<<<< HEAD
 
     function collectDeepDescendants(id) {
         if (seen.has(id)) return;
@@ -112,6 +113,62 @@ export function utilEntityAndDeepMemberIDs(ids, graph) {
             .forEach(collectDeepDescendants);   // recurse
     }
 }
+
+// returns an selector to select entity ids for:
+//  - deep descendant entityIDs for any of those entities that are relations
+export function utilDeepMemberSelector(ids, graph, skipMultipolgonMembers) {
+    var idsSet = new Set(ids);
+    var seen = new Set();
+    var returners = new Set();
+    ids.forEach(collectDeepDescendants);
+    return utilEntitySelector(Array.from(returners));
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+
+    function collectDeepDescendants(id) {
+        if (seen.has(id)) return;
+        seen.add(id);
+
+        if (!idsSet.has(id)) {
+            returners.add(id);
+        }
+
+        var entity = graph.hasEntity(id);
+        if (!entity || entity.type !== 'relation') return;
+        if (skipMultipolgonMembers && entity.isMultipolygon()) return;
+        entity.members
+            .map(function(member) { return member.id; })
+            .forEach(collectDeepDescendants);   // recurse
+    }
+}
+
+
+// returns an selector to select entity ids for:
+//  - deep descendant entityIDs for any of those entities that are relations
+export function utilDeepMemberSelector(ids, graph, skipMultipolgonMembers) {
+    var idsSet = new Set(ids);
+    var seen = new Set();
+    var returners = new Set();
+    ids.forEach(collectDeepDescendants);
+    return utilEntitySelector(Array.from(returners));
+
+    function collectDeepDescendants(id) {
+        if (seen.has(id)) return;
+        seen.add(id);
+
+        if (!idsSet.has(id)) {
+            returners.add(id);
+        }
+
+        var entity = graph.hasEntity(id);
+        if (!entity || entity.type !== 'relation') return;
+        if (skipMultipolgonMembers && entity.isMultipolygon()) return;
+        entity.members
+            .map(function(member) { return member.id; })
+            .forEach(collectDeepDescendants);   // recurse
+    }
+}
+
 
 // returns an selector to select entity ids for:
 //  - deep descendant entityIDs for any of those entities that are relations
@@ -243,21 +300,29 @@ export function utilDisplayType(id) {
 }
 
 
-export function utilDisplayLabel(entity, graphOrGeometry) {
+// `utilDisplayLabel`
+// Returns a string suitable for display
+// By default returns something like name/ref, fallback to preset type, fallback to OSM type
+//   "Main Street" or "Tertiary Road"
+// If `verbose=true`, include both preset name and feature name.
+//   "Tertiary Road Main Street"
+//
+export function utilDisplayLabel(entity, graphOrGeometry, verbose) {
+    var result;
     var displayName = utilDisplayName(entity);
-    if (displayName) {
-        // use the display name if there is one
-        return displayName;
-    }
     var preset = typeof graphOrGeometry === 'string' ?
         presetManager.matchTags(entity.tags, graphOrGeometry) :
         presetManager.match(entity, graphOrGeometry);
-    if (preset && preset.name()) {
-        // use the preset name if there is a match
-        return preset.name();
+    var presetName = preset && (preset.suggestion ? preset.subtitle() : preset.name());
+
+    if (verbose) {
+        result = [presetName, displayName].filter(Boolean).join(' ');
+    } else {
+        result = displayName || presetName;
     }
-    // fallback to the display type (node/way/relation)
-    return utilDisplayType(entity.id);
+
+    // Fallback to the OSM type (node/way/relation)
+    return result || utilDisplayType(entity.id);
 }
 
 

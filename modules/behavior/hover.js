@@ -4,8 +4,13 @@ import {
     select as d3_select
 } from 'd3-selection';
 
+<<<<<<< HEAD
 import { presetManager } from '../presets';
 import { osmEntity, osmNote, QAItem } from '../osm';
+=======
+import { schemaManager } from '../entities/schema_manager';
+import { osmEntity, osmNote, qaError } from '../osm';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 import { utilKeybinding, utilRebind } from '../util';
 
 /*
@@ -121,6 +126,11 @@ export function behaviorHover(context) {
         function modeAllowsHover(target) {
             var mode = context.mode();
             if (mode.id === 'add-point') {
+                if (target.type === 'node') {
+                    if (!schemaManager.canSnapNodeWithTagsToNode(mode.defaultTags, target, context.graph())) return false;
+                } else if (target.type === 'way') {
+                    if (!schemaManager.canAddNodeWithTagsToWay(mode.defaultTags, target, context.graph())) return false;
+                }
                 return mode.preset.matchGeometry('vertex') ||
                     (target.type !== 'way' && target.geometry(context.graph()) !== 'vertex');
             }

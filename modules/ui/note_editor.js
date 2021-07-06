@@ -1,4 +1,3 @@
-import { dispatch as d3_dispatch } from 'd3-dispatch';
 import {
     select as d3_select
 } from 'd3-selection';
@@ -6,26 +5,29 @@ import {
 import { t } from '../core/localizer';
 import { services } from '../services';
 import { modeBrowse } from '../modes/browse';
+import { modeSelectNote } from '../modes/select_note';
 import { svgIcon } from '../svg/icon';
 
 // import { uiField } from './field';
 // import { uiFormFields } from './form_fields';
 
 import { uiNoteComments } from './note_comments';
-import { uiNoteHeader } from './note_header';
 import { uiNoteReport } from './note_report';
 import { uiViewOnOSM } from './view_on_osm';
 
 import {
-    utilNoAuto,
-    utilRebind
+    utilNoAuto
 } from '../util';
 
 
 export function uiNoteEditor(context) {
+<<<<<<< HEAD
     var dispatch = d3_dispatch('change');
     var noteComments = uiNoteComments(context);
     var noteHeader = uiNoteHeader();
+=======
+    var noteComments = uiNoteComments();
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     // var formFields = uiFormFields(context);
 
@@ -33,9 +35,9 @@ export function uiNoteEditor(context) {
     var _newNote;
     // var _fieldsArr;
 
-
     function noteEditor(selection) {
 
+<<<<<<< HEAD
         var header = selection.selectAll('.header')
             .data([0]);
 
@@ -57,11 +59,14 @@ export function uiNoteEditor(context) {
 
 
         var body = selection.selectAll('.body')
+=======
+        var body = selection.selectAll('.inspector-body')
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             .data([0]);
 
         body = body.enter()
             .append('div')
-            .attr('class', 'body')
+            .attr('class', 'inspector-body sep-top')
             .merge(body);
 
         var editor = body.selectAll('.note-editor')
@@ -71,16 +76,24 @@ export function uiNoteEditor(context) {
             .append('div')
             .attr('class', 'modal-section note-editor')
             .merge(editor)
+<<<<<<< HEAD
             .call(noteHeader.note(_note))
             .call(noteComments.note(_note))
             .call(noteSaveSection);
 
         var footer = selection.selectAll('.footer')
+=======
+            .call(noteComments.note(_note))
+            .call(noteSaveSection);
+
+
+        var footer = selection.selectAll('.inspector-footer')
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             .data([0]);
 
         footer.enter()
             .append('div')
-            .attr('class', 'footer')
+            .attr('class', 'inspector-footer')
             .merge(footer)
             .call(uiViewOnOSM(context).what(_note))
             .call(uiNoteReport(context).note(_note));
@@ -97,7 +110,7 @@ export function uiNoteEditor(context) {
 
 
     function noteSaveSection(selection) {
-        var isSelected = (_note && _note.id === context.selectedNoteID());
+        var isSelected = _note/* && _note.id === context.selectedNoteID()*/;
         var noteSave = selection.selectAll('.note-save')
             .data((isSelected ? [_note] : []), function(d) { return d.status + d.id; });
 
@@ -316,7 +329,7 @@ export function uiNoteEditor(context) {
         var osm = services.osm;
         var hasAuth = osm && osm.authenticated();
 
-        var isSelected = (_note && _note.id === context.selectedNoteID());
+        var isSelected = _note/* && _note.id === context.selectedNoteID()*/;
         var buttonSection = selection.selectAll('.buttons')
             .data((isSelected ? [_note] : []), function(d) { return d.status + d.id; });
 
@@ -391,7 +404,6 @@ export function uiNoteEditor(context) {
             osm.removeNote(d);
         }
         context.enter(modeBrowse(context));
-        dispatch.call('change');
     }
 
 
@@ -400,7 +412,7 @@ export function uiNoteEditor(context) {
         var osm = services.osm;
         if (osm) {
             osm.postNoteCreate(d, function(err, note) {
-                dispatch.call('change', note);
+                noteDidUpdate(note);
             });
         }
     }
@@ -412,7 +424,7 @@ export function uiNoteEditor(context) {
         if (osm) {
             var setStatus = (d.status === 'open' ? 'closed' : 'open');
             osm.postNoteUpdate(d, setStatus, function(err, note) {
-                dispatch.call('change', note);
+                noteDidUpdate(note);
             });
         }
     }
@@ -422,8 +434,21 @@ export function uiNoteEditor(context) {
         var osm = services.osm;
         if (osm) {
             osm.postNoteUpdate(d, d.status, function(err, note) {
-                dispatch.call('change', note);
+                noteDidUpdate(note);
             });
+        }
+    }
+
+
+    function noteDidUpdate(note) {
+        context.map().pan([0,0]);  // trigger a redraw
+        var osm = services.osm;
+        note = osm && osm.getNote(note.id);
+        if (!note) {
+            context.enter(modeBrowse(context));
+        } else {
+            // reset the mode and UI for the updated note
+            context.enter(modeSelectNote(context, note.id));
         }
     }
 
@@ -441,5 +466,5 @@ export function uiNoteEditor(context) {
     };
 
 
-    return utilRebind(noteEditor, dispatch, 'on');
+    return noteEditor;
 }

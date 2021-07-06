@@ -2,11 +2,24 @@ describe('iD.uiSectionRawTagEditor', function() {
     var taglist, element, entity, context;
 
     function render(tags) {
+<<<<<<< HEAD:test/spec/ui/sections/raw_tag_editor.js
         taglist = iD.uiSectionRawTagEditor('raw-tag-editor', context)
             .entityIDs([entity.id])
             .presets([{isFallback: function() { return false; }}])
             .tags(tags)
             .expandedByDefault(true);
+=======
+
+        entity = iD.osmNode({ id: 'n12345', tags: tags });
+        context = iD.coreContext();
+        context.history().merge([entity]);
+
+        taglist = iD.uiRawTagEditor(context)
+            .tags(tags)
+            .entityIDs([entity.id])
+            .preset({isFallback: function() { return false; }})
+            .expanded(true);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444:test/spec/ui/raw_tag_editor.js
 
         element = d3.select('body')
             .append('div')
@@ -15,10 +28,14 @@ describe('iD.uiSectionRawTagEditor', function() {
     }
 
     beforeEach(function () {
+<<<<<<< HEAD:test/spec/ui/sections/raw_tag_editor.js
         entity = iD.osmNode({id: 'n12345'});
         context = iD.coreContext().init();
         context.history().merge([entity]);
         render({highway: 'residential'});
+=======
+        render({ highway: 'residential' });
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444:test/spec/ui/raw_tag_editor.js
     });
 
     afterEach(function () {

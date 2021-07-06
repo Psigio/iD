@@ -1,18 +1,26 @@
 import { dispatch as d3_dispatch } from 'd3-dispatch';
 import { select as d3_select } from 'd3-selection';
 
-import LocationConflation from '@ideditor/location-conflation';
-import whichPolygon from 'which-polygon';
 import { resolveStrings } from 'osm-community-index';
 
 import { fileFetcher } from '../core/file_fetcher';
+import { locationManager } from '../core/locations';
 import { t, localizer } from '../core/localizer';
+
 import { svgIcon } from '../svg/icon';
 import { uiDisclosure } from '../ui/disclosure';
 import { utilRebind } from '../util/rebind';
 
 
+<<<<<<< HEAD
 let _oci = null;
+=======
+export function uiSuccess(context) {
+    var MAXEVENTS = 2;
+    var detected = utilDetect();
+    var dispatch = d3_dispatch('cancel');
+    var _changeset;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 export function uiSuccess(context) {
   const MAXEVENTS = 2;
@@ -25,42 +33,172 @@ export function uiSuccess(context) {
   function ensureOSMCommunityIndex() {
     const data = fileFetcher;
     return Promise.all([
-        data.get('oci_resources'),
         data.get('oci_features'),
+        data.get('oci_resources'),
         data.get('oci_defaults')
       ])
       .then(vals => {
         if (_oci) return _oci;
 
-        const ociResources = vals[0].resources;
-        const loco = new LocationConflation(vals[1]);
-        let ociFeatures = {};
+        // Merge Custom Features
+        if (vals[0] && Array.isArray(vals[0].features)) {
+          locationManager.mergeCustomGeoJSON(vals[0]);
+        }
 
-        Object.values(ociResources).forEach(resource => {
-          let feature;
-          try {
-            feature = loco.resolveLocationSet(resource.locationSet).feature;
-            let ociFeature = ociFeatures[feature.id];
-            if (!ociFeature) {
-              ociFeature = JSON.parse(JSON.stringify(feature));  // deep clone
-              ociFeature.properties.resourceIDs = new Set();
-              ociFeatures[feature.id] = ociFeature;
-            }
-            ociFeature.properties.resourceIDs.add(resource.id);
-          } catch (err) {
-            /* ignore communities with an unresolvable locationSet */
-            console.warn(`warning: skipping community resource ${resource.id}: ${err.message}`); // eslint-disable-line no-console
-          }
-        });
+<<<<<<< HEAD
+        let ociResources = Object.values(vals[1].resources);
+        if (ociResources.length) {
+          // Resolve all locationSet features.
+          return locationManager.mergeLocationSets(ociResources)
+            .then(() => {
+              _oci = {
+                resources: ociResources,
+                defaults: vals[2].defaults
+              };
+              return _oci;
+=======
+        var parsed = new Date(raw);
+        return new Date(parsed.toUTCString().substr(0, 25));  // convert to local timezone
+    }
 
-        return _oci = {
-          defaults: vals[2].defaults,
-          features: ociFeatures,
-          resources: ociResources,
-          query: whichPolygon({ type: 'FeatureCollection', features: Object.values(ociFeatures) })
-        };
+
+    function success(selection) {
+
+        var body = selection
+            .append('div')
+            .attr('class', 'save-success sep-top');
+
+        var summary = body
+            .append('div')
+            .attr('class', 'save-summary assistant-row');
+
+        var osm = context.connection();
+        if (!osm) return;
+
+        var changesetURL = osm.changesetURL(_changeset.id);
+
+        summary
+            .append('div')
+            .attr('class', 'icon-col summary-icon')
+            .append('a')
+            .attr('target', '_blank')
+            .attr('href', changesetURL)
+            .append('svg')
+            .attr('class', 'logo-small')
+            .append('use')
+            .attr('xlink:href', '#iD-logo-osm');
+
+        var summaryDetail = summary
+            .append('div')
+            .attr('class', 'main-col cell-detail summary-detail');
+
+        summaryDetail
+            .append('a')
+            .attr('class', 'cell-detail summary-view-on-osm')
+            .attr('target', '_blank')
+            .attr('href', changesetURL)
+            .text(t('success.view_on_osm'));
+
+        summaryDetail
+            .append('div')
+            .html(t('success.changeset_id', {
+                changeset_id: '<a href="' + changesetURL + '" target="_blank">' + _changeset.id + '</a>'
+            }));
+
+
+        // Gather community polygon IDs intersecting the map..
+        var matchFeatures = data.community.query(context.map().center(), true) || [];
+        var matchIDs = matchFeatures.map(function(feature) { return feature.id; });
+
+        // Gather community resources that are either global or match a polygon.
+        var matchResources = Object.values(data.community.resources)
+            .filter(function(v) { return !v.featureId || matchIDs.indexOf(v.featureId) !== -1; });
+
+        if (matchResources.length) {
+            // sort by size ascending, then by community rank
+            matchResources.sort(function(a, b) {
+                var aSize = Infinity;
+                var bSize = Infinity;
+                var aOrder = a.order || 0;
+                var bOrder = b.order || 0;
+
+                if (a.featureId) {
+                    aSize = data.community.features[a.featureId].properties.area;
+                }
+                if (b.featureId) {
+                    bSize = data.community.features[b.featureId].properties.area;
+                }
+
+                return aSize < bSize ? -1 : aSize > bSize ? 1 : bOrder - aOrder;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+            });
+        } else {
+          _oci = {
+            resources: [],  // no resources?
+            defaults: vals[2].defaults
+          };
+          return _oci;
+        }
+<<<<<<< HEAD
       });
   }
+=======
+    }
+
+
+    function showCommunityLinks(selection, matchResources) {
+        var communityLinks = selection
+            .append('div')
+            .attr('class', 'save-communityLinks sep-top');
+
+        communityLinks
+            .append('h3')
+            .text(t('success.like_osm'));
+
+        var table = communityLinks
+            .append('div')
+            .attr('class', 'community-table');
+
+        var row = table.selectAll('.community-row')
+            .data(matchResources);
+
+        var rowEnter = row.enter()
+            .append('div')
+            .attr('class', 'assistant-row community-row');
+
+        rowEnter
+            .append('div')
+            .attr('class', 'icon-col cell-icon community-icon')
+            .append('a')
+            .attr('target', '_blank')
+            .attr('href', function(d) { return d.url; })
+            .append('svg')
+            .attr('class', 'logo-small')
+            .append('use')
+            .attr('xlink:href', function(d) { return '#community-' + d.type; });
+
+        var communityDetail = rowEnter
+            .append('div')
+            .attr('class', 'main-col cell-detail community-detail');
+
+        communityDetail
+            .each(showCommunityDetails);
+
+        communityLinks
+            .append('div')
+            .attr('class', 'community-missing')
+            .text(t('success.missing'))
+            .append('a')
+            .attr('class', 'link-out')
+            .attr('target', '_blank')
+            .attr('tabindex', -1)
+            .call(svgIcon('#iD-icon-out-link', 'inline'))
+            .attr('href', 'https://github.com/osmlab/osm-community-index/issues')
+            .append('span')
+            .text(t('success.tell_us'));
+    }
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 
   // string-to-date parsing in JavaScript is weird
@@ -162,24 +300,23 @@ export function uiSuccess(context) {
     // Get OSM community index features intersecting the map..
     ensureOSMCommunityIndex()
       .then(oci => {
+        const loc = context.map().center();
+        const validLocations = locationManager.locationsAt(loc);
+
+        // Gather the communities
         let communities = [];
-        const properties = oci.query(context.map().center(), true) || [];
+        oci.resources.forEach(resource => {
+          let area = validLocations[resource.locationSetID];
+          if (!area) return;
 
-        // Gather the communities from the result
-        properties.forEach(props => {
-          const resourceIDs = Array.from(props.resourceIDs);
-          resourceIDs.forEach(resourceID => {
-            let resource = oci.resources[resourceID];
-
-            // Resolve strings
-            const localizer = (stringID) => t.html(`community.${stringID}`);
-            resource.resolved = resolveStrings(resource, oci.defaults, localizer);
-
-            communities.push({
-              area: props.area || Infinity,
-              order: resource.order || 0,
-              resource: resource
-            });
+          // Resolve strings
+          const localizer = (stringID) => t.html(`community.${stringID}`);
+          resource.resolved = resolveStrings(resource, oci.defaults, localizer);
+          
+          communities.push({
+            area: area,
+            order: resource.order || 0,
+            resource: resource
           });
         });
 
@@ -399,6 +536,7 @@ export function uiSuccess(context) {
   };
 
 
+<<<<<<< HEAD
   success.location = function(val) {
     if (!arguments.length) return _location;
     _location = val;
@@ -407,4 +545,7 @@ export function uiSuccess(context) {
 
 
   return utilRebind(success, dispatch, 'on');
+=======
+    return utilRebind(success, dispatch, 'on');
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 }

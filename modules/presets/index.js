@@ -2,12 +2,15 @@ import { dispatch as d3_dispatch } from 'd3-dispatch';
 
 import { prefs } from '../core/preferences';
 import { fileFetcher } from '../core/file_fetcher';
+import { locationManager } from '../core/locations';
+
 import { osmNodeGeometriesForTags, osmSetAreaKeys, osmSetPointTags, osmSetVertexTags } from '../osm/tags';
 import { presetCategory } from './category';
 import { presetCollection } from './collection';
 import { presetField } from './field';
 import { presetPreset } from './preset';
 import { utilArrayUniq, utilRebind } from '../util';
+import { groupManager } from '../entities/group_manager';
 
 export { presetCategory };
 export { presetCollection };
@@ -51,8 +54,8 @@ export function presetIndex() {
 
   // Index of presets by (geometry, tag key).
   let _geometryIndex = { point: {}, vertex: {}, line: {}, area: {}, relation: {} };
-
   let _loadPromise;
+
 
   _this.ensureLoaded = () => {
     if (_loadPromise) return _loadPromise;
@@ -77,13 +80,27 @@ export function presetIndex() {
   };
 
 
+  // `merge` accepts an object containing new preset data (all properties optional):
+  // {
+  //   fields: {},
+  //   presets: {},
+  //   categories: {},
+  //   defaults: {},
+  //   featureCollection: {}
+  //}
   _this.merge = (d) => {
+    let newLocationSets = [];
+
     // Merge Fields
     if (d.fields) {
       Object.keys(d.fields).forEach(fieldID => {
-        const f = d.fields[fieldID];
+        let f = d.fields[fieldID];
+
         if (f) {   // add or replace
-          _fields[fieldID] = presetField(fieldID, f);
+          f = presetField(fieldID, f);
+          if (f.locationSet) newLocationSets.push(f);
+          _fields[fieldID] = f;
+
         } else {   // remove
           delete _fields[fieldID];
         }
@@ -93,10 +110,14 @@ export function presetIndex() {
     // Merge Presets
     if (d.presets) {
       Object.keys(d.presets).forEach(presetID => {
-        const p = d.presets[presetID];
+        let p = d.presets[presetID];
+
         if (p) {   // add or replace
           const isAddable = !_addablePresetIDs || _addablePresetIDs.has(presetID);
-          _presets[presetID] = presetPreset(presetID, p, isAddable, _fields, _presets);
+          p = presetPreset(presetID, p, isAddable, _fields, _presets);
+          if (p.locationSet) newLocationSets.push(p);
+          _presets[presetID] = p;
+
         } else {   // remove (but not if it's a fallback)
           const existing = _presets[presetID];
           if (existing && !existing.isFallback()) {
@@ -106,22 +127,23 @@ export function presetIndex() {
       });
     }
 
-    // Need to rebuild _this.collection before loading categories
-    _this.collection = Object.values(_presets).concat(Object.values(_categories));
-
     // Merge Categories
     if (d.categories) {
       Object.keys(d.categories).forEach(categoryID => {
-        const c = d.categories[categoryID];
+        let c = d.categories[categoryID];
+
         if (c) {   // add or replace
-          _categories[categoryID] = presetCategory(categoryID, c, _this);
+          c = presetCategory(categoryID, c, _presets);
+          if (c.locationSet) newLocationSets.push(c);
+          _categories[categoryID] = c;
+
         } else {   // remove
           delete _categories[categoryID];
         }
       });
     }
 
-    // Rebuild _this.collection after loading categories
+    // Rebuild _this.collection after changing presets and categories
     _this.collection = Object.values(_presets).concat(Object.values(_categories));
 
     // Merge Defaults
@@ -155,6 +177,16 @@ export function presetIndex() {
       });
     });
 
+    // Merge Custom Features
+    if (d.featureCollection && Array.isArray(d.featureCollection.features)) {
+      locationManager.mergeCustomGeoJSON(d.featureCollection);
+    }
+
+    // Resolve all locationSet features.
+    if (newLocationSets.length) {
+      locationManager.mergeLocationSets(newLocationSets);
+    }
+
     return _this;
   };
 
@@ -166,16 +198,22 @@ export function presetIndex() {
       if (geometry === 'vertex' && entity.isOnAddressLine(resolver)) {
         geometry = 'point';
       }
-      return _this.matchTags(entity.tags, geometry);
+      const entityExtent = entity.extent(resolver);
+      return _this.matchTags(entity.tags, geometry, entityExtent.center());
     });
   };
 
 
-  _this.matchTags = (tags, geometry) => {
+  _this.matchTags = (tags, geometry, loc) => {
     const geometryMatches = _geometryIndex[geometry];
     let address;
     let best = -1;
     let match;
+
+    let validLocations;
+    if (Array.isArray(loc)) {
+      validLocations = locationManager.locationsAt(loc);
+    }
 
     for (let k in tags) {
       // If any part of an address is present, allow fallback to "Address" preset - #4353
@@ -183,14 +221,86 @@ export function presetIndex() {
         address = geometryMatches['addr:*'][0];
       }
 
+<<<<<<< HEAD
       const keyMatches = geometryMatches[k];
       if (!keyMatches) continue;
 
       for (let i = 0; i < keyMatches.length; i++) {
-        const score = keyMatches[i].matchScore(tags);
+        const candidate = keyMatches[i];
+
+        // discard candidate preset if location is not valid at `loc`
+        if (validLocations && candidate.locationSetID) {
+          if (!validLocations[candidate.locationSetID]) continue;
+=======
+        return areaKeys;
+    };
+
+    all.pointTags = function() {
+        return all.collection.reduce(function(pointTags, d) {
+            // ignore name-suggestion-index, deprecated, and generic presets
+            if (d.suggestion || d.replacement || d.searchable === false) return pointTags;
+
+            // only care about the primary tag
+            for (var key in d.tags) break;
+            if (!key) return pointTags;
+
+            // if this can be a point
+            if (d.geometry.indexOf('point') !== -1) {
+                pointTags[key] = pointTags[key] || {};
+                pointTags[key][d.tags[key]] = true;
+            }
+            return pointTags;
+        }, {});
+    };
+
+    all.vertexTags = function() {
+        return all.collection.reduce(function(vertexTags, d) {
+            // ignore name-suggestion-index, deprecated, and generic presets
+            if (d.suggestion || d.replacement || d.searchable === false) return vertexTags;
+
+            // only care about the primary tag
+            for (var key in d.tags) break;
+            if (!key) return vertexTags;
+
+            // if this can be a vertex
+            if (d.geometry.indexOf('vertex') !== -1) {
+                vertexTags[key] = vertexTags[key] || {};
+                vertexTags[key][d.tags[key]] = true;
+            }
+            return vertexTags;
+        }, {});
+    };
+
+    all.build = function(d, addable) {
+        if (d.fields) {
+            Object.keys(d.fields).forEach(function(id) {
+                var f = d.fields[id];
+                _fields[id] = presetField(id, f);
+                if (f.universal) {
+                    _universal.push(_fields[id]);
+                }
+            });
+        }
+
+        if (d.presets) {
+            var rawPresets = d.presets;
+            Object.keys(d.presets).forEach(function(id) {
+                var p = d.presets[id];
+                var existing = all.index(id);
+                var isAddable = typeof addable === 'function' ? addable(id, p) : addable;
+                if (existing !== -1) {
+                    all.collection[existing] = presetPreset(id, p, _fields, isAddable, rawPresets);
+                } else {
+                    all.collection.push(presetPreset(id, p, _fields, isAddable, rawPresets));
+                }
+            });
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+        }
+
+        const score = candidate.matchScore(tags);
         if (score > best) {
           best = score;
-          match = keyMatches[i];
+          match = candidate;
         }
       }
     }
@@ -267,6 +377,7 @@ export function presetIndex() {
     return areaKeys;
   };
 
+<<<<<<< HEAD
 
   _this.pointTags = () => {
     return _this.collection.reduce((pointTags, d) => {
@@ -313,25 +424,157 @@ export function presetIndex() {
   _this.universal = () => _universal;
 
 
-  _this.defaults = (geometry, n, startWithRecents) => {
+  _this.defaults = (geometry, n, startWithRecents, loc) => {
     let recents = [];
     if (startWithRecents) {
       recents = _this.recent().matchGeometry(geometry).collection.slice(0, 4);
     }
+
     let defaults;
     if (_addablePresetIDs) {
       defaults = Array.from(_addablePresetIDs).map(function(id) {
         var preset = _this.item(id);
         if (preset && preset.matchGeometry(geometry)) return preset;
+=======
+            for (var j = 0; j < geometry.length; j++) {
+                var g = _index[geometry[j]];
+                for (var k in preset.tags) {
+                    (g[k] = g[k] || []).push(preset);
+                }
+            }
+        }
+        return all;
+    };
+
+    all.init = function(addablePresetIDs) {
+        all.collection = [];
+        _favorites = null;
+        _recents = null;
+        _addablePresetIDs = addablePresetIDs;
+        _fields = {};
+        _universal = [];
+        _index = { point: {}, vertex: {}, line: {}, area: {}, relation: {} };
+
+        var addable = true;
+        if (addablePresetIDs) {
+            addable = function(presetID) {
+                return addablePresetIDs.indexOf(presetID) !== -1;
+            };
+        }
+
+        return all.build(data.presets, addable);
+    };
+
+
+    all.reset = function() {
+        all.collection = [];
+        _defaults = { area: all, line: all, point: all, vertex: all, relation: all };
+        _fields = {};
+        _universal = [];
+        _favorites = null;
+        _recents = null;
+
+        groupManager.clearCachedPresets();
+
+        // Index of presets by (geometry, tag key).
+        _index = {
+            point: {},
+            vertex: {},
+            line: {},
+            area: {},
+            relation: {}
+        };
+
+        return all;
+    };
+
+    all.fromExternal = function(external, done) {
+        all.reset();
+        d3_json(external)
+            .then(function(externalPresets) {
+                all.build(data.presets, false);    // load the default presets as non-addable to start
+
+                _addablePresetIDs = externalPresets.presets && Object.keys(externalPresets.presets);
+
+                all.build(externalPresets, true);  // then load the external presets as addable
+            })
+            .catch(function() {
+                all.init();
+            })
+            .finally(function() {
+                done(all);
+            });
+    };
+
+    all.field = function(id) {
+        return _fields[id];
+    };
+
+    all.universal = function() {
+        return _universal;
+    };
+
+    all.defaults = function(geometry, n) {
+        var rec = [];
+        if (!context.inIntro()) {
+            rec = all.recent().matchGeometry(geometry).collection.slice(0, 4);
+        }
+        var def = utilArrayUniq(rec.concat(_defaults[geometry].collection)).slice(0, n - 1);
+        return presetCollection(utilArrayUniq(rec.concat(def).concat(all.fallback(geometry))));
+    };
+
+    all.recent = function() {
+        return presetCollection(utilArrayUniq(all.getRecents().map(function(d) {
+            return d.preset;
+        })));
+    };
+
+    function RibbonItem(preset, source) {
+        var item = {};
+        item.preset = preset;
+        item.source = source;
+
+        item.isFavorite = function() {
+            return item.source === 'favorite';
+        };
+        item.isRecent = function() {
+            return item.source === 'recent';
+        };
+        item.matches = function(preset) {
+            return item.preset.id === preset.id;
+        };
+        item.minified = function() {
+            return {
+                pID: item.preset.id
+            };
+        };
+        return item;
+    }
+
+    function ribbonItemForMinified(d, source) {
+        if (d && d.pID) {
+            var preset = all.item(d.pID);
+            if (!preset) return null;
+            return RibbonItem(preset, source);
+        }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         return null;
       }).filter(Boolean);
     } else {
       defaults = _defaults[geometry].collection.concat(_this.fallback(geometry));
     }
 
-    return presetCollection(
+    let result = presetCollection(
       utilArrayUniq(recents.concat(defaults)).slice(0, n - 1)
     );
+
+    if (Array.isArray(loc)) {
+      const validLocations = locationManager.locationsAt(loc);
+      result.collection = result.collection.filter(a => !a.locationSetID || validLocations[a.locationSetID]);
+    }
+
+<<<<<<< HEAD
+    return result;
   };
 
   // pass a Set of addable preset ids
@@ -356,6 +599,33 @@ export function presetIndex() {
     return _this;
   };
 
+=======
+    all.getGenericRibbonItems = function() {
+        return ['point', 'line', 'area'].map(function(id) {
+            return RibbonItem(all.item(id), 'generic');
+        });
+    };
+
+    all.getFavorites = function() {
+        if (!_favorites) {
+
+            // fetch from local storage
+            var rawFavorites = JSON.parse(context.storage('preset_favorites'));
+
+            if (!rawFavorites) {
+                rawFavorites = [];
+                context.storage('preset_favorites', JSON.stringify(rawFavorites));
+            }
+
+            _favorites = rawFavorites.reduce(function(output, d) {
+                var item = ribbonItemForMinified(d, 'favorite');
+                if (item && item.preset.addable()) output.push(item);
+                return output;
+            }, []);
+        }
+        return _favorites;
+    };
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
   _this.recent = () => {
     return presetCollection(
@@ -387,6 +657,7 @@ export function presetIndex() {
     return null;
   }
 
+<<<<<<< HEAD
 
   _this.getGenericRibbonItems = () => {
     return ['point', 'line', 'area'].map(id => RibbonItem(_this.item(id), 'generic'));
@@ -581,6 +852,138 @@ export function presetIndex() {
     return null;
   };
 
+=======
+    all.getAddable = function() {
+        if (!_addablePresetIDs) return [];
+
+        return _addablePresetIDs.map(function(id) {
+            var preset = all.item(id);
+            if (preset) {
+                return RibbonItem(preset, 'addable');
+            }
+        }).filter(Boolean);
+    };
+
+    all.getRecents = function() {
+        if (!_recents) {
+            // fetch from local storage
+            _recents = (JSON.parse(context.storage('preset_recents')) || [])
+                .reduce(function(output, d) {
+                    var item = ribbonItemForMinified(d, 'recent');
+                    if (item && item.preset.addable()) output.push(item);
+                    return output;
+                }, []);
+        }
+        return _recents;
+    };
+
+    all.toggleFavorite = function(preset) {
+        var favs = all.getFavorites();
+        var favorite = all.favoriteMatching(preset);
+        if (favorite) {
+            favs.splice(favs.indexOf(favorite), 1);
+        } else {
+            // only allow 10 favorites
+            if (favs.length === 10) {
+                // remove the last favorite (last in, first out)
+                favs.pop();
+            }
+            // append array
+            favs.push(RibbonItem(preset, 'favorite'));
+        }
+        setFavorites(favs);
+    };
+
+    all.removeFavorite = function(preset) {
+        var item = all.favoriteMatching(preset);
+        if (item) {
+            var items = all.getFavorites();
+            items.splice(items.indexOf(item), 1);
+            setFavorites(items);
+        }
+    };
+
+    all.removeRecent = function(preset) {
+        var item = all.recentMatching(preset);
+        if (item) {
+            var items = all.getRecents();
+            items.splice(items.indexOf(item), 1);
+            setRecents(items);
+        }
+    };
+
+    all.favoriteMatching = function(preset) {
+        var favs = all.getFavorites();
+        for (var index in favs) {
+            if (favs[index].matches(preset)) {
+                return favs[index];
+            }
+        }
+        return null;
+    };
+    all.recentMatching = function(preset) {
+        var items = all.getRecents();
+        for (var index in items) {
+            if (items[index].matches(preset)) {
+                return items[index];
+            }
+        }
+        return null;
+    };
+
+    all.moveItem = function(items, fromIndex, toIndex) {
+        if (fromIndex === toIndex ||
+            fromIndex < 0 || toIndex < 0 ||
+            fromIndex >= items.length || toIndex >= items.length) return null;
+        items.splice(toIndex, 0, items.splice(fromIndex, 1)[0]);
+        return items;
+    };
+
+    all.addFavorite = function(preset, besidePreset, after) {
+        var favorites = all.getFavorites();
+
+        var beforeItem = all.favoriteMatching(besidePreset);
+        var toIndex = favorites.indexOf(beforeItem);
+        if (after) toIndex += 1;
+
+        var newItem = RibbonItem(preset, 'favorite');
+        favorites.splice(toIndex, 0, newItem);
+        setFavorites(favorites);
+    };
+
+    all.addRecent = function(preset, besidePreset, after) {
+        var recents = all.getRecents();
+
+        var beforeItem = all.recentMatching(besidePreset);
+        var toIndex = recents.indexOf(beforeItem);
+        if (after) toIndex += 1;
+
+        var newItem = RibbonItem(preset, 'recent');
+        recents.splice(toIndex, 0, newItem);
+        setRecents(recents);
+    };
+
+    all.setMostRecent = function(preset) {
+        if (context.inIntro()) return;
+        if (preset.searchable === false) return;
+
+        var items = all.getRecents();
+        var item = all.recentMatching(preset);
+        if (item) {
+            items.splice(items.indexOf(item), 1);
+        } else {
+            item = RibbonItem(preset, 'recent');
+        }
+        // allow 30 recents
+        if (items.length === 30) {
+            // remove the last favorite (first in, first out)
+            items.pop();
+        }
+        // prepend array
+        items.unshift(item);
+        setRecents(items);
+    };
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
   return utilRebind(_this, dispatch, 'on');
 }

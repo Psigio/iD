@@ -12,11 +12,17 @@ en:
     text: text
     deselect: deselect
   toolbar:
-    inspect: Inspect
+    center_zoom:
+      title: Center
+      return_tooltip: Undo centering on this.
+    return: Return
+    deselect:
+      title: Deselect
     undo_redo: Undo / Redo
     recent: Recent
     favorites: Favorites
     add_feature: Add Feature
+<<<<<<< HEAD
   title:
     format:
       context: "{base} – {context}"
@@ -26,6 +32,107 @@ en:
       one: "{labeled} and {count} more"
       other: "{labeled} and {count} more"
   modes:
+=======
+    finish: Finish
+    generic:
+      title: Geometries
+    geometry:
+      key: T
+    repeat:
+      title: Repeat
+      tooltip:
+        point: "Add another {feature} after this one."
+        way: "Start another {feature} after finishing this one."
+      key: R
+    segments:
+      title: Segments
+      straight:
+        title: Straight
+      orthogonal:
+        title: Rectangular
+      key: A
+    structure:
+      none:
+        title: None
+      key: S
+    support:
+      title: Support
+      pole:
+        title: Pole
+      tower:
+        title: Tower
+      key: S
+    toolbox:
+      title: Tools
+      tooltip: Customize the toolbar.
+  assistant:
+    mode:
+      authenticating: Authenticating
+      drawing: Drawing
+      inspecting: Inspecting
+      mapping: Mapping
+      placing: Placing
+      saving: Saving
+    instructions:
+      add_point: Click the center of the feature.
+      add_vertex: Click the point along a line or area where the feature occurs.
+      add_line: Click the starting point of the feature.
+      draw_line: Place points along the feature's centerline.
+      add_area: Click any corner of the feature.
+      draw_area: Place points along the feature's outline.
+      finishing: When you're done, click the last point again or click <b>Finish</b>.
+    global_location: Planet Earth
+    greetings:
+      morning: Good Morning
+      afternoon: Good Afternoon
+      evening: Good Evening
+      # "Good Night" isn't a greeting in English but it can be in some languages
+      night: Good Evening
+    notice: Notice
+    launch:
+      osm_info: "You’re editing <b>OpenStreetMap</b>: the free, collaborative world map."
+      first_time_tutorial: "If this is your first time here, consider taking the <a>quick-start tutorial</a>."
+      thanks_have_fun: Thanks for contributing. Have fun!
+      generic_welcome:
+        0: Ready to make the map even better?
+        1: What a great day for mapping.
+      welcome_back_user: "Welcome back, {displayName}."
+      changesets: "You've contributed {changesets} changesets to OpenStreetMap so far."
+      changesets_date: "You've contributed {changesets} changesets to OpenStreetMap since {joinDate}."
+      anniversary:
+        happy_anniversary: Happy Anniversary
+        years:
+          first: "Congratulations on your first year of mapping, {displayName}!"
+          subsequent: "Congratulations on {years} years of mapping, {displayName}!"
+      blocks:
+        active: Your OpenStreetMap account, {displayName}, has an active block and cannot upload changes.
+      start_mapping: Start Mapping
+    restore:
+      title: Restore
+      discard: Discard
+      info:
+        count_loc: "You have {count} unsaved changes around {location}."
+        count_loc_time: "You have {count} unsaved changes from {duration} ago around {location}."
+      ask: Would you like to restore them?
+    commit:
+      auth:
+        osm_account: OpenStreetMap Account
+        message: You must sign in to upload your changes.
+      success:
+        thank_you: Thank You!
+        just_improved: "You've just improved OpenStreetMap around {location}."
+        propagation_help: Your changes will be live momentarily. Some maps take longer to update than others.
+    feature_count:
+      multiple: "{count} Features"
+  modes:
+    add_feature:
+      search_placeholder: Search feature types
+      description: "Browse features to add to the map."
+      # The hotkey to open the Add Feature preset browser. Expect the key adjacent to the number row.
+      key: "`"
+      result: "{count} result"
+      results: "{count} results"
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     add_area:
       title: Area
       description: "Add parks, buildings, lakes or other areas to the map."
@@ -137,11 +244,19 @@ en:
       key: Q
       annotation:
         corner:
+<<<<<<< HEAD
           one: Squared a corner.
           other: "Squared {n} corners."
         feature:
           one: Squared the corners of a feature.
           other: "Squared the corners of {n} features."
+=======
+          single: Squared a corner.
+          multiple: Squared several corners.
+        feature:
+          single: Squared the corners of a feature.
+          multiple: Squared the corners of several features.
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
       multiple_blockers:
         multiple: These can't be squared for multiple reasons.
       end_vertex:
@@ -155,7 +270,11 @@ en:
         multiple: These can't be made square because they are not squarish.
       too_large:
         single: This can't be made square because not enough of it is currently visible.
+<<<<<<< HEAD
         multiple: These can't be made square because not enough of them are currently visible.
+=======
+        multiple: These can't be made square because not enought of them are currently visible.
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
       connected_to_hidden:
         single: This can't be made square because it is connected to a hidden feature.
         multiple: These can't be made square because some are connected to hidden features.
@@ -561,9 +680,6 @@ en:
   loading_auth: "Connecting to OpenStreetMap..."
   report_a_bug: Report a bug
   help_translate: Help translate
-  sidebar:
-    key: '`'
-    tooltip: Toggle the sidebar.
   feature_info:
     hidden_warning:
       one: "{count} hidden feature"
@@ -583,15 +699,22 @@ en:
     request_review_info: "Unsure about something? Invite an experienced mapper to check your work once it's live."
     save: Upload
     cancel: Cancel
+<<<<<<< HEAD
     changes: Changes
+=======
+    change: "1 Change"
+    changes: "{count} Changes"
+    changes_parenthetical: "Changes ({count})"
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     download_changes: Download osmChange file
     errors: Errors
     warnings: Warnings
     modified: Modified
     deleted: Deleted
     created: Created
-    outstanding_errors_message: "Please resolve all errors first. {count} remaining."
-    comment_needed_message: Please add a changeset comment first.
+    blocker_message:
+      outstanding_errors: "Please resolve all errors before uploading."
+      comment_needed: Please add a changeset comment before uploading. This helps others understand your edits.
     about_changeset_comments: About changeset comments
     about_changeset_comments_link: //wiki.openstreetmap.org/wiki/Good_changeset_comments
     google_warning: "You mentioned Google in this comment: remember that copying from Google Maps is strictly forbidden."
@@ -673,12 +796,20 @@ en:
   inspector:
     zoom_to:
       key: Z
+<<<<<<< HEAD
       title: Zoom To Selection
       no_selection: Nothing to zoom to.
+=======
+      tooltip_feature: "Center and zoom the map to focus on this feature."
+      tooltip_note: "Center and zoom the map to focus on this note."
+      tooltip_data: "Center and zoom the map to focus on this data."
+      tooltip_issue: "Center and zoom the map to focus on this issue."
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     show_more: Show More
     view_on_osm: View on openstreetmap.org
     view_on_osmose: View on osmose.openstreetmap.fr
     view_on_keepRight: View on keepright.at
+<<<<<<< HEAD
     feature_type: Feature Type
     fields: Fields
     tags: Tags
@@ -686,6 +817,12 @@ en:
     relations: Relations
     features: Features
     title_count: "{title} ({count})"
+=======
+    all_fields: Fields
+    all_tags: Tags
+    all_members: Members
+    all_relations: Relations
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     add_to_relation: Add to a relation
     new_relation: New relation...
     choose_relation: Choose a parent relation
@@ -699,10 +836,14 @@ en:
     edit_reference: "edit/translate"
     wiki_reference: View documentation
     wiki_en_reference: View documentation in English
+<<<<<<< HEAD
     key_value: "key=value"
     multiple_values: Multiple Values
     multiple_types: Multiple Types
     unshared_value_tooltip: not shared by all features
+=======
+    multiple_values: Multiple Values
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     hidden_preset:
       manual: "{features} are hidden. Enable them in the Map Data pane."
       zoom: "{features} are hidden. Zoom in to enable them."
@@ -840,51 +981,6 @@ en:
       title: "Username"
       tooltip: "Show only photos by this user"
   feature:
-    points:
-      description: Points
-      tooltip: "Points of Interest"
-    traffic_roads:
-      description: Traffic Roads
-      tooltip: "Highways, Streets, etc."
-    service_roads:
-      description: Service Roads
-      tooltip: "Service Roads, Parking Aisles, Tracks, etc."
-    paths:
-      description: Paths
-      tooltip: "Sidewalks, Foot Paths, Cycle Paths, etc."
-    buildings:
-      description: Buildings
-      tooltip: "Buildings, Shelters, Garages, etc."
-    building_parts:
-      description: Building Parts
-      tooltip: "3D Building and Roof Components"
-    indoor:
-      description: Indoor Features
-      tooltip: "Rooms, Corridors, Stairwells, etc."
-    landuse:
-      description: Landuse Features
-      tooltip: "Forests, Farmland, Parks, Residential, Commercial, etc."
-    boundaries:
-      description: Boundaries
-      tooltip: "Administrative Boundaries"
-    water:
-      description: Water Features
-      tooltip: "Rivers, Lakes, Ponds, Basins, etc."
-    rail:
-      description: Rail Features
-      tooltip: "Railways"
-    pistes:
-      description: Pistes
-      tooltip: "Ski Slopes, Sled Runs, Ice Skating Trails, etc."
-    aerialways:
-      description: Aerial Features
-      tooltip: "Chair Lifts, Gondolas, Zip Lines, etc."
-    power:
-      description: Power Features
-      tooltip: "Power Lines, Power Plants, Substations, etc."
-    past_future:
-      description: Past/Future Features
-      tooltip: "Proposed, Construction, Abandoned, Demolished, etc."
     others:
       description: Other Features
       tooltip: "Everything Else"
@@ -933,6 +1029,7 @@ en:
       url:
         instructions: "Enter a data file URL or vector tile URL template. Valid tokens are:\n   {zoom} or {z}, {x}, {y} for Z/X/Y tile scheme"
         placeholder: Enter a url
+<<<<<<< HEAD
   preferences:
     title: Preferences
     description: Preferences
@@ -948,6 +1045,8 @@ en:
     description: "Do you wish to restore unsaved changes from a previous editing session?"
     restore: Restore my changes
     reset: Discard my changes
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
   save:
     title: Save
     help: "Review your changes and upload them to OpenStreetMap, making them visible to other users."
@@ -978,13 +1077,9 @@ en:
       memberlist: 'Relation members were changed by both you and {user}.'
       tags: 'You changed the <b>{tag}</b> tag to "{local}" and {user} changed it to "{remote}".'
   success:
-    just_edited: "You just edited OpenStreetMap!"
-    thank_you: "Thank you for improving the map."
-    thank_you_location: "Thank you for improving the map around {where}."
     thank_you_where:
       format: "{place}{separator}{region}"
       separator: ", "
-    help_html: Your changes should appear on OpenStreetMap within a few minutes. It may take longer for maps elsewhere to receive updates.
     help_link_text: Details
     help_link_url: "https://wiki.openstreetmap.org/wiki/FAQ#I_have_just_made_some_changes_to_the_map._How_do_I_get_to_see_my_changes.3F"
     view_on_osm: "View Changes on OSM"
@@ -999,13 +1094,15 @@ en:
     okay: "OK"
     cancel: "Cancel"
   splash:
+<<<<<<< HEAD
     welcome: Welcome to the iD OpenStreetMap editor
     text: "iD is a friendly but powerful tool for contributing to the world's best free world map. This is version {version}. For more information see {website} and report bugs at {github}."
     privacy_update: "Our privacy policy has recently been updated."
     privacy_policy: iD privacy policy
     privacy: "{updateMessage} By using this software, you agree to do so in accordance with the {privacyLink}."
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     walkthrough: "Start the Walkthrough"
-    start: "Edit now"
   source_switch:
     live: live
     lose_changes: "You have unsaved changes. Switching the map server will discard them. Are you sure you want to switch servers?"
@@ -1036,7 +1133,7 @@ en:
       fix_title: Fix Guidelines
       trap_title: Common Mistakes
     improveOSM:
-      title: ImproveOSM Detection
+      title: ImproveOSM
       geometry_types:
         path: paths
         parking: parking
@@ -1064,6 +1161,10 @@ en:
           description: '{num_passed} of {num_trips} recorded trips (travelling {travel_direction}) make a turn from {from_way} to {to_way} at {junction}. There may be a missing "{turn_restriction}" restriction.'
     keepRight:
       title: KeepRight
+<<<<<<< HEAD
+=======
+      detail_title: Error
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
       detail_description: Description
       comment: Comment
       comment_placeholder: Enter a comment to share with other users.
@@ -1808,9 +1909,9 @@ en:
         message: "{feature} has incomplete tags"
         reference: "Some features should have additional tags."
       noncanonical_brand:
-        message: "{feature} looks like a brand with nonstandard tags"
-        message_incomplete: "{feature} looks like a brand with incomplete tags"
-        reference: "All features of the same brand should be tagged the same way."
+        message: "{feature} looks like a common feature with nonstandard tags"
+        message_incomplete: "{feature} looks like a common feature with incomplete tags"
+        reference: "Some features, for example retail chains or post offices, are expected to have certain tags in common."
     point_as_area:
       message: '{feature} should be a point, not an area'
     point_as_line:
@@ -2369,8 +2470,19 @@ en:
     west: "W"
     coordinate: "{coordinate}{direction}"
     coordinate_pair: "{latitude}, {longitude}"
+<<<<<<< HEAD
     # translate the letters but leave the format the same
     year_month_day: "YYYY-MM-DD"
+=======
+    second: "1 second"
+    seconds: "{quantity} seconds"
+    minute: "1 minute"
+    minutes: "{quantity} minutes"
+    hour: "1 hour"
+    hours: "{quantity} hours"
+    day: "1 day"
+    days: "{quantity} days"
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
   wikidata:
     identifier: "Identifier"
     label: "Label"

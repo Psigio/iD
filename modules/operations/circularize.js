@@ -47,8 +47,20 @@ export function operationCircularize(context, selectedIDs) {
     };
 
 
+<<<<<<< HEAD
     operation.available = function() {
         return _actions.length && selectedIDs.length === _actions.length;
+=======
+    operation.available = function(situation) {
+        if (selectedIDs.length !== 1 ||
+            entity.type !== 'way' ||
+            new Set(entity.nodes).size <= 1) return false;
+
+        if (situation === 'toolbar' &&
+            action.disabled(context.graph())) return false;
+
+        return true;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     };
 
 

@@ -6,7 +6,7 @@ import { select as d3_select } from 'd3-selection';
 
 import { t } from '../core/localizer';
 
-import { fileFetcher as data } from './file_fetcher';
+import { fileFetcher } from './file_fetcher';
 import { localizer } from './localizer';
 import { prefs } from './preferences';
 import { coreHistory } from './history';
@@ -61,6 +61,7 @@ export function coreContext() {
   /* Document title */
   /* (typically shown as the label for the browser window/tab) */
 
+<<<<<<< HEAD
   // If true, iD will update the title based on what the user is doing
   let _setsDocumentTitle = true;
   context.setsDocumentTitle = function(val) {
@@ -103,6 +104,17 @@ export function coreContext() {
   context.preauth = (options) => {
     if (_connection) {
       _connection.switch(options);
+=======
+    function afterLoad(callback) {
+        return function(err, result) {
+            if (!err && result && result.data) {
+                history.merge(result.data, result.extent);
+            }
+            if (callback) {
+                callback(err, result);
+            }
+        };
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     }
     return context;
   };
@@ -115,6 +127,7 @@ export function coreContext() {
     return context;
   };
 
+<<<<<<< HEAD
 
   // A string or array or locale codes to prefer over the browser's settings
   context.locale = function(locale) {
@@ -123,6 +136,101 @@ export function coreContext() {
     return context;
   };
 
+=======
+    context.loadTiles = function(projection, callback) {
+        var handle = window.requestIdleCallback(function() {
+            _deferred.delete(handle);
+            if (connection && context.editableDataEnabled()) {
+                connection.loadTiles(projection, afterLoad(callback));
+            }
+        });
+        _deferred.add(handle);
+    };
+
+    context.loadTileAtLoc = function(loc, callback) {
+        var handle = window.requestIdleCallback(function() {
+            _deferred.delete(handle);
+            if (connection && context.editableDataEnabled()) {
+                connection.loadTileAtLoc(loc, afterLoad(callback));
+            }
+        });
+        _deferred.add(handle);
+    };
+
+    context.loadEntity = function(entityID, callback) {
+        if (connection) {
+            connection.loadEntity(entityID, afterLoad(callback));
+        }
+    };
+
+    context.loadEntities = function(entityIDs, callback) {
+        var handle = window.requestIdleCallback(function() {
+            _deferred.delete(handle);
+            if (connection) {
+                connection.loadMultiple(entityIDs, loadedMultiple);
+            }
+        });
+        _deferred.add(handle);
+
+        function loadedMultiple(err, result) {
+            if (err || !result) {
+                afterLoad(callback)(err, result);
+                return;
+            }
+
+            // `loadMultiple` doesn't fetch child nodes, so we have to fetch them
+            // manually before merging ways
+
+            var unloadedNodeIDs = new Set();
+            var okayResults = [];
+            var waitingEntities = [];
+            result.data.forEach(function(entity) {
+                var hasUnloaded = false;
+                if (entity.type === 'way') {
+                    entity.nodes.forEach(function(nodeID) {
+                        if (!context.hasEntity(nodeID)) {
+                            hasUnloaded = true;
+                            // mark that we still need this node
+                            unloadedNodeIDs.add(nodeID);
+                        }
+                    });
+                }
+                if (hasUnloaded) {
+                    // don't merge ways with unloaded nodes
+                    waitingEntities.push(entity);
+                } else {
+                    okayResults.push(entity);
+                }
+            });
+            if (okayResults.length) {
+                // merge valid results right away
+                afterLoad(callback)(err, { data: okayResults });
+            }
+            if (waitingEntities.length) {
+                // run a followup request to fetch missing nodes
+                connection.loadMultiple(Array.from(unloadedNodeIDs), function(err, result) {
+                    if (err || !result) {
+                        afterLoad(callback)(err, result);
+                        return;
+                    }
+
+                    result.data.forEach(function(entity) {
+                        // mark that we successfully received this node
+                        unloadedNodeIDs.delete(entity.id);
+                        // schedule this node to be merged
+                        waitingEntities.push(entity);
+                    });
+
+                    // since `loadMultiple` could send multiple requests, wait until all have completed
+                    if (unloadedNodeIDs.size === 0) {
+                        // merge the ways and their nodes all at once
+                        afterLoad(callback)(err, { data: waitingEntities });
+                    }
+                });
+            }
+        }
+    };
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
   function afterLoad(cid, callback) {
     return (err, result) => {
@@ -144,10 +252,43 @@ export function coreContext() {
         }
         return;
 
+<<<<<<< HEAD
       } else {
         _history.merge(result.data, result.extent);
         if (typeof callback === 'function') {
           callback(err, result);
+=======
+    context.zoomToEntities = function(entityIDs) {
+        context.loadEntities(entityIDs);
+
+        map.on('drawn.zoomToEntities', function() {
+            if (entityIDs.some(function(entityID) {
+                return !context.hasEntity(entityID);
+            })) return;
+
+            map.on('drawn.zoomToEntities', null);
+            context.on('enter.zoomToEntities', null);
+
+            var mode = modeSelect(context, entityIDs);
+            context.enter(mode);
+            mode.zoomToSelected();
+        });
+
+        context.on('enter.zoomToEntities', function() {
+            if (mode.id !== 'browse') {
+                map.on('drawn.zoomToEntities', null);
+                context.on('enter.zoomToEntities', null);
+            }
+        });
+    };
+
+    var minEditableZoom = 16;
+    context.minEditableZoom = function(val) {
+        if (!arguments.length) return minEditableZoom;
+        minEditableZoom = val;
+        if (connection) {
+            connection.tileZoom(val);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
         return;
       }
@@ -241,6 +382,7 @@ export function coreContext() {
     // remove whitespace
     val = val.trim();
 
+<<<<<<< HEAD
     // use the canonical form of the string
     if (val.normalize) val = val.normalize('NFC');
 
@@ -250,6 +392,25 @@ export function coreContext() {
   context.cleanTagKey = (val) => cleanOsmString(val, context.maxCharsForTagKey());
   context.cleanTagValue = (val) => cleanOsmString(val, context.maxCharsForTagValue());
   context.cleanRelationRole = (val) => cleanOsmString(val, context.maxCharsForRelationRole());
+=======
+    /* Modes */
+    var mode;
+    context.mode = function() {
+        return mode;
+    };
+    context.enter = function(newMode) {
+        if (mode) {
+            mode.exit();
+            container.classed('mode-' + mode.id, false);
+            dispatch.call('exit', this, mode);
+        }
+
+        mode = newMode;
+        mode.enter();
+        container.classed('mode-' + newMode.id, true);
+        dispatch.call('enter', this, mode);
+    };
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 
   /* History */
@@ -260,6 +421,7 @@ export function coreContext() {
     return context;
   };
 
+<<<<<<< HEAD
   // Immediately save the user's history to localstorage, if possible
   // This is called someteimes, but also on the `window.onbeforeunload` handler
   context.save = () => {
@@ -275,6 +437,8 @@ export function coreContext() {
         _history.clearSaved();
         return;
       }
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     } else {
       canSave = context.selectedIDs().every(id => {
@@ -342,9 +506,29 @@ export function coreContext() {
   };
 
 
+<<<<<<< HEAD
   /* Behaviors */
   context.install = (behavior) => context.surface().call(behavior);
   context.uninstall = (behavior) => context.surface().call(behavior.off);
+=======
+    /* Map */
+    var map;
+    context.map = function() { return map; };
+    context.layers = function() { return map.layers; };
+    context.surface = function() { return map.surface; };
+    context.editableDataEnabled = function() { return map.editableDataEnabled(); };
+    context.editable = function() {
+
+        // don't allow editing during save
+        var mode = context.mode();
+        if (!mode || mode.id === 'save') return false;
+
+        return map.editableDataEnabled();
+    };
+    context.surfaceRect = function() {
+        return map.surface.node().getBoundingClientRect();
+    };
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 
   /* Copy/Paste */
@@ -447,7 +631,7 @@ export function coreContext() {
   context.assetPath = function(val) {
     if (!arguments.length) return _assetPath;
     _assetPath = val;
-    data.assetPath(val);
+    fileFetcher.assetPath(val);
     return context;
   };
 
@@ -455,7 +639,7 @@ export function coreContext() {
   context.assetMap = function(val) {
     if (!arguments.length) return _assetMap;
     _assetMap = val;
-    data.assetMap(val);
+    fileFetcher.assetMap(val);
     return context;
   };
 
@@ -576,13 +760,19 @@ export function coreContext() {
 
       // if the container isn't available, e.g. when testing, don't load the UI
       if (!context.container().empty()) {
-        _ui.ensureLoaded().then(function() {
-          _photos.init();
-        });
+        _ui.ensureLoaded()
+          .then(() => {
+            _photos.init();
+          });
       }
     }
   };
 
-
+<<<<<<< HEAD
   return context;
+=======
+    context.isFirstSession = !context.storage('sawSplash');
+
+    return context;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 }

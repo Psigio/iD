@@ -123,6 +123,10 @@ export function uiSectionRawMemberEditor(context) {
 
         var entityID = _entityIDs[0];
 
+        if (selection.empty()) return;
+
+        if (selection.empty()) return;
+
         var memberships = [];
         var entity = context.entity(entityID);
         entity.members.slice(0, _maxMembers).forEach(function(member, index) {
@@ -397,10 +401,39 @@ export function uiSectionRawMemberEditor(context) {
         }
     }
 
+<<<<<<< HEAD:modules/ui/sections/raw_member_editor.js
     section.entityIDs = function(val) {
         if (!arguments.length) return _entityIDs;
         _entityIDs = val;
         return section;
+=======
+    function rawMemberEditor(selection) {
+        var entity = context.entity(_entityID);
+
+        var gt = entity.members.length > _maxMembers ? '>' : '';
+        selection.call(uiDisclosure(context, 'raw_member_editor', true)
+            .title(t('inspector.all_members') + ' (' + gt + entity.members.slice(0, _maxMembers).length + ')')
+            .expanded(true)
+            .updatePreference(false)
+            .on('toggled', function(expanded) {
+                if (expanded) {
+                    selection.node().parentNode.scrollTop += 200;
+                }
+            })
+            .content(updateDisclosureContent)
+        );
+
+        context.history().on('merge', function() {
+            // update the UI in case the merge includes newly-downloaded members
+            updateDisclosureContent(_contentSelection);
+        });
+    }
+
+    rawMemberEditor.entityID = function(val) {
+        if (!arguments.length) return _entityID;
+        _entityID = val;
+        return rawMemberEditor;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444:modules/ui/raw_member_editor.js
     };
 
 

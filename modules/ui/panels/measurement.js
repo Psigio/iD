@@ -38,8 +38,14 @@ export function uiPanelMeasurement(context) {
     var _isImperial = !localizer.usesMetric();
 
     function redraw(selection) {
+<<<<<<< HEAD
         var graph = context.graph();
         var selectedNoteID = context.selectedNoteID();
+=======
+        var mode = context.mode();
+        var resolver = context.graph();
+        var selectedNoteID = mode.selectedNoteID && mode.selectedNoteID();
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         var osm = services.osm;
 
         var localeCode = localizer.localeCode();

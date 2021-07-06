@@ -131,6 +131,7 @@ export function operationDisconnect(context, selectedIDs) {
     };
 
 
+<<<<<<< HEAD
     operation.relatedEntityIds = function() {
         if (_vertexIDs.length) {
             return _disconnectingWayIds;
@@ -142,6 +143,11 @@ export function operationDisconnect(context, selectedIDs) {
     operation.available = function() {
         if (_actions.length === 0) return false;
         if (_otherIDs.length !== 0) return false;
+=======
+    operation.available = function(situation) {
+        if (actions.length === 0) return false;
+        if (otherIDs.length !== 0) return false;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         if (_vertexIDs.length !== 0 && _wayIDs.length !== 0 && !_wayIDs.every(function(wayID) {
             return _vertexIDs.some(function(vertexID) {
@@ -149,6 +155,11 @@ export function operationDisconnect(context, selectedIDs) {
                 return way.nodes.indexOf(vertexID) !== -1;
             });
         })) return false;
+
+        if (situation === 'toolbar' &&
+            actions.every(function(action) {
+                return action.disabled(context.graph()) === 'not_connected';
+            })) return false;
 
         return true;
     };

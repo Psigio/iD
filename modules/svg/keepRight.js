@@ -191,6 +191,7 @@ export function svgKeepRight(projection, context, dispatch) {
         .style('display', _layerEnabled ? 'block' : 'none')
       .merge(drawLayer);
 
+<<<<<<< HEAD
     if (_layerEnabled) {
       if (service && ~~context.map().zoom() >= minZoom) {
         editOn();
@@ -199,6 +200,99 @@ export function svgKeepRight(projection, context, dispatch) {
       } else {
         editOff();
       }
+=======
+    // Update the error markers
+    function updateMarkers() {
+        if (!_keepRightVisible || !_keepRightEnabled) return;
+
+        var service = getService();
+        var selectedID = context.mode() && context.mode().selectedErrorID && context.mode().selectedErrorID();
+        var data = (service ? service.getErrors(projection) : []);
+        var getTransform = svgPointTransform(projection);
+
+        // Draw markers..
+        var markers = drawLayer.selectAll('.qa_error.keepRight')
+            .data(data, function(d) { return d.id; });
+
+        // exit
+        markers.exit()
+            .remove();
+
+        // enter
+        var markersEnter = markers.enter()
+            .append('g')
+            .attr('class', function(d) {
+                return [
+                    'qa_error',
+                    d.service,
+                    'error_id-' + d.id,
+                    'error_type-' + d.parent_error_type
+                ].join(' ');
+            });
+
+        markersEnter
+            .append('ellipse')
+            .attr('cx', 0.5)
+            .attr('cy', 1)
+            .attr('rx', 6.5)
+            .attr('ry', 3)
+            .attr('class', 'stroke');
+
+        markersEnter
+            .append('path')
+            .call(markerPath, 'shadow');
+
+        markersEnter
+            .append('use')
+            .attr('class', 'qa_error-fill')
+            .attr('width', '20px')
+            .attr('height', '20px')
+            .attr('x', '-8px')
+            .attr('y', '-22px')
+            .attr('xlink:href', '#iD-icon-bolt');
+
+        // update
+        markers
+            .merge(markersEnter)
+            .sort(sortY)
+            .classed('selected', function(d) { return d.id === selectedID; })
+            .attr('transform', getTransform);
+
+
+        // Draw targets..
+        if (touchLayer.empty()) return;
+        var fillClass = context.getDebug('target') ? 'pink ' : 'nocolor ';
+
+        var targets = touchLayer.selectAll('.qa_error.keepRight')
+            .data(data, function(d) { return d.id; });
+
+        // exit
+        targets.exit()
+            .remove();
+
+        // enter/update
+        targets.enter()
+            .append('rect')
+            .attr('width', '20px')
+            .attr('height', '20px')
+            .attr('x', '-8px')
+            .attr('y', '-22px')
+            .merge(targets)
+            .sort(sortY)
+            .attr('class', function(d) {
+                return 'qa_error ' + d.service + ' target error_id-' + d.id + ' ' + fillClass;
+            })
+            .attr('transform', getTransform);
+
+
+        function sortY(a, b) {
+            return (a.id === selectedID) ? 1
+                : (b.id === selectedID) ? -1
+                : (a.severity === 'error' && b.severity !== 'error') ? 1
+                : (b.severity === 'error' && a.severity !== 'error') ? -1
+                : b.loc[1] - a.loc[1];
+        }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     }
   }
 
@@ -220,7 +314,33 @@ export function svgKeepRight(projection, context, dispatch) {
     return this;
   };
 
+<<<<<<< HEAD
   drawKeepRight.supported = () => !!getService();
+=======
+    // Toggles the layer on and off
+    drawKeepRight.enabled = function(val) {
+        if (!arguments.length) return _keepRightEnabled;
+
+        _keepRightEnabled = val;
+        if (_keepRightEnabled) {
+            layerOn();
+        } else {
+            layerOff();
+            if (context.mode().id === 'select-error') {
+                context.enter(modeBrowse(context));
+            }
+        }
+
+        dispatch.call('change');
+        return this;
+    };
+
+
+    drawKeepRight.supported = function() {
+        return !!getService();
+    };
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
   return drawKeepRight;
 }

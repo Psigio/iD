@@ -9,7 +9,11 @@ export function uiFeatureInfo(context) {
         var hiddenList = features.hidden().map(function(k) {
             if (stats[k]) {
                 count += stats[k];
+<<<<<<< HEAD
                 return t('inspector.title_count', { title: t.html('feature.' + k + '.description'), count: stats[k] });
+=======
+                return String(stats[k]) + ' ' + features.features()[k].title;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             }
             return null;
         }).filter(Boolean);
@@ -28,9 +32,17 @@ export function uiFeatureInfo(context) {
                 .attr('href', '#')
                 .html(t.html('feature_info.hidden_warning', { count: count }))
                 .call(tooltipBehavior)
+<<<<<<< HEAD
                 .on('click', function(d3_event) {
                     tooltipBehavior.hide();
                     d3_event.preventDefault();
+=======
+                .on('click', function() {
+                    tooltipBehavior.hide();
+
+                    d3_event.preventDefault();
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                     // open the Map Data pane
                     context.ui().togglePanes(context.container().select('.map-panes .map-data-pane'));
                 });

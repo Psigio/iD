@@ -1,6 +1,11 @@
 import { interpolateRgb as d3_interpolateRgb } from 'd3-interpolate';
+<<<<<<< HEAD
 
 import { t } from '../../core/localizer';
+=======
+import { event as d3_event, select as d3_select } from 'd3-selection';
+import { t } from '../../util/locale';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 import { modeSave } from '../../modes';
 import { svgIcon } from '../../svg';
 import { uiCmd } from '../cmd';
@@ -11,14 +16,23 @@ export function uiToolSave(context) {
 
     var tool = {
         id: 'save',
+<<<<<<< HEAD
         label: t.html('save.title')
+=======
+        label: t('save.title'),
+        userToggleable: false
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     };
 
     var button = null;
-    var tooltipBehavior = null;
+    var tooltipBehavior = tooltip()
+        .placement('bottom')
+        .html(true)
+        .title(uiTooltipHtml(t('save.no_changes'), key))
+        .scrollContainer(d3_select('#bar'));
     var history = context.history();
     var key = uiCmd('⌘S');
-    var _numChanges = 0;
+    var _numChanges;
 
     function isSaving() {
         var mode = context.mode();
@@ -26,7 +40,7 @@ export function uiToolSave(context) {
     }
 
     function isDisabled() {
-        return _numChanges === 0 || isSaving();
+        return !_numChanges || isSaving();
     }
 
     function save(d3_event) {
@@ -36,15 +50,15 @@ export function uiToolSave(context) {
         }
     }
 
-    function bgColor() {
+    function bgColor(count) {
         var step;
-        if (_numChanges === 0) {
+        if (count === 0) {
             return null;
-        } else if (_numChanges <= 50) {
-            step = _numChanges / 50;
+        } else if (count <= 50) {
+            step = count / 50;
             return d3_interpolateRgb('#fff', '#ff8')(step);  // white -> yellow
         } else {
-            step = Math.min((_numChanges - 50) / 50, 1.0);
+            step = Math.min((count - 50) / 50, 1.0);
             return d3_interpolateRgb('#ff8', '#f88')(step);  // yellow -> red
         }
     }
@@ -57,22 +71,33 @@ export function uiToolSave(context) {
 
         if (tooltipBehavior) {
             tooltipBehavior
+<<<<<<< HEAD
                 .title(t.html(_numChanges > 0 ? 'save.help' : 'save.no_changes'))
                 .keys([key]);
+=======
+                .title(uiTooltipHtml(
+                    t(val > 0 ? 'save.help' : 'save.no_changes'), key)
+                );
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
 
         if (button) {
             button
                 .classed('disabled', isDisabled())
-                .style('background', bgColor(_numChanges));
+                .style('background', bgColor(val));
 
             button.select('span.count')
+<<<<<<< HEAD
                 .html(_numChanges);
+=======
+                .text(val);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
     }
 
 
     tool.render = function(selection) {
+<<<<<<< HEAD
         tooltipBehavior = uiTooltip()
             .placement('bottom')
             .title(t.html('save.no_changes'))
@@ -80,8 +105,15 @@ export function uiToolSave(context) {
             .scrollContainer(context.container().select('.top-toolbar'));
 
         var lastPointerUpType;
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         button = selection
+            .selectAll('.bar-button')
+            .data([0]);
+
+        var buttonEnter = button
+            .enter()
             .append('button')
             .attr('class', 'save disabled bar-button')
             .on('pointerup', function(d3_event) {
@@ -105,21 +137,38 @@ export function uiToolSave(context) {
             })
             .call(tooltipBehavior);
 
-        button
+        buttonEnter
             .call(svgIcon('#iD-icon-save'));
 
-        button
+        buttonEnter
             .append('span')
             .attr('class', 'count')
             .attr('aria-hidden', 'true')
             .html('0');
 
+        button = buttonEnter.merge(button);
+
+        button = buttonEnter.merge(button);
+
         updateCount();
+    };
 
+    var disallowedModes = new Set([
+        'save',
+        'add-point',
+        'add-line',
+        'add-area',
+        'draw-line',
+        'draw-area'
+    ]);
 
+    tool.allowed = function() {
+        return !disallowedModes.has(context.mode().id);
+    };
+
+    tool.install = function() {
         context.keybinding()
             .on(key, save, true);
-
 
         context.history()
             .on('change.save', updateCount);
@@ -139,6 +188,9 @@ export function uiToolSave(context) {
 
 
     tool.uninstall = function() {
+
+        _numChanges = null;
+
         context.keybinding()
             .off(key, true);
 
@@ -149,7 +201,6 @@ export function uiToolSave(context) {
             .on('enter.save', null);
 
         button = null;
-        tooltipBehavior = null;
     };
 
     return tool;

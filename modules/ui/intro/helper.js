@@ -250,8 +250,14 @@ export function isMostlySquare(points) {
 }
 
 
+<<<<<<< HEAD
 export function selectMenuItem(context, operation) {
     return context.container().select('.edit-menu .edit-menu-item-' + operation);
+=======
+export function selectMenuItem(operation) {
+    var selector = '.edit-menu .edit-menu-item-' + operation;
+    return d3_select(selector);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 }
 
 

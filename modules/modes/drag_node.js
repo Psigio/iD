@@ -34,8 +34,7 @@ export function modeDragNode(context) {
         id: 'drag-node',
         button: 'browse'
     };
-    var hover = behaviorHover(context).altDisables(true)
-        .on('hover', context.ui().sidebar.hover);
+    var hover = behaviorHover(context).altDisables(true);
     var edit = behaviorEdit(context);
 
     var _nudgeInterval;
@@ -469,7 +468,6 @@ export function modeDragNode(context) {
 
 
     mode.exit = function() {
-        context.ui().sidebar.hover.cancel();
         context.uninstall(hover);
         context.uninstall(edit);
 

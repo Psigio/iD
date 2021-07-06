@@ -10,13 +10,20 @@ import { prefs } from '../core/preferences';
 import { geoExtent, geoRawMercator, geoScaleToZoom, geoZoomToScale } from '../geo';
 import { modeBrowse } from '../modes/browse';
 import { svgAreas, svgLabels, svgLayers, svgLines, svgMidpoints, svgPoints, svgVertices } from '../svg';
+<<<<<<< HEAD
+=======
+import { uiFlash } from '../ui/flash';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 import { utilFastMouse, utilFunctor, utilSetTransform, utilEntityAndDeepMemberIDs } from '../util/util';
 import { utilBindOnce } from '../util/bind_once';
 import { utilDetect } from '../util/detect';
 import { utilGetDimensions } from '../util/dimensions';
 import { utilRebind } from '../util/rebind';
+<<<<<<< HEAD
 import { utilZoomPan } from '../util/zoom_pan';
 import { utilDoubleUp } from '../util/double_up';
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 // constants
 var TILESIZE = 256;
@@ -31,11 +38,15 @@ function clamp(num, min, max) {
 
 
 export function rendererMap(context) {
+<<<<<<< HEAD
     var dispatch = d3_dispatch(
         'move', 'drawn',
         'crossEditableZoom', 'hitMinZoom',
         'changeHighlighting', 'changeAreaFill'
     );
+=======
+    var dispatch = d3_dispatch('move', 'drawn', 'crossEditableZoom');
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     var projection = context.projection;
     var curtainProjection = context.curtainProjection;
     var drawLayers;
@@ -60,6 +71,7 @@ export function rendererMap(context) {
     var _isTransformed = false;
     var _minzoom = 0;
     var _getMouseCoords;
+<<<<<<< HEAD
     var _lastPointerEvent;
     var _lastWithinEditableZoom;
 
@@ -68,6 +80,10 @@ export function rendererMap(context) {
 
     // use pointer events on supported platforms; fallback to mouse events
     var _pointerPrefix = 'PointerEvent' in window ? 'pointer' : 'mouse';
+=======
+    var _mouseEvent;
+    var _lastWithinEditableZoom;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     // use pointer event interaction if supported; fallback to touch/mouse events in d3-zoom
     var _zoomerPannerFunction = 'PointerEvent' in window ? utilZoomPan : d3_zoom;
@@ -191,14 +207,22 @@ export function rendererMap(context) {
             .on(_pointerPrefix + 'move.map', function(d3_event) {
                 _lastPointerEvent = d3_event;
             })
+<<<<<<< HEAD
             .on(_pointerPrefix + 'over.vertices', function(d3_event) {
+=======
+            .on('mouseover.vertices', function() {
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                 if (map.editableDataEnabled() && !_isTransformed) {
                     var hover = d3_event.target.__data__;
                     surface.call(drawVertices.drawHover, context.graph(), hover, map.extent());
                     dispatch.call('drawn', this, { full: false });
                 }
             })
+<<<<<<< HEAD
             .on(_pointerPrefix + 'out.vertices', function(d3_event) {
+=======
+            .on('mouseout.vertices', function() {
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                 if (map.editableDataEnabled() && !_isTransformed) {
                     var hover = d3_event.relatedTarget && d3_event.relatedTarget.__data__;
                     surface.call(drawVertices.drawHover, context.graph(), hover, map.extent());
@@ -250,6 +274,7 @@ export function rendererMap(context) {
         });
 
         context.on('enter.map',  function() {
+<<<<<<< HEAD
             if (!map.editableDataEnabled(true /* skip zoom check */)) return;
 
             // redraw immediately any objects affected by a change in selectedIDs.
@@ -263,6 +288,21 @@ export function rendererMap(context) {
                         graph.parentWays(entity).forEach(function(parent) {
                             selectedAndParents[parent.id] = parent;
                         });
+=======
+            if (map.editableDataEnabled(true /* skip zoom check */) && !_isTransformed) {
+                // redraw immediately any objects affected by a change in selectedIDs.
+                var graph = context.graph();
+                var selectedAndParents = {};
+                context.selectedIDs().forEach(function(id) {
+                    var entity = graph.hasEntity(id);
+                    if (entity) {
+                        selectedAndParents[entity.id] = entity;
+                        if (entity.type === 'node') {
+                            graph.parentWays(entity).forEach(function(parent) {
+                                selectedAndParents[parent.id] = parent;
+                            });
+                        }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                     }
                 }
             });
@@ -345,8 +385,11 @@ export function rendererMap(context) {
             });
             fullRedraw = true;
             filter = utilFunctor(true);
+<<<<<<< HEAD
             // selected features should always be visible, so we can skip filtering
             applyFeatureLayerFilters = false;
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         } else if (difference) {
             var complete = difference.complete(map.extent());
@@ -583,10 +626,20 @@ export function rendererMap(context) {
 
         }
 
+<<<<<<< HEAD
         if (_transformStart.x === x &&
             _transformStart.y === y &&
             _transformStart.k === k) {
             return;  // no change
+=======
+        var withinEditableZoom = map.withinEditableZoom();
+        if (_lastWithinEditableZoom !== withinEditableZoom) {
+            if (_lastWithinEditableZoom !== undefined) {
+                // notify that the map zoomed in or out over the editable zoom threshold
+                dispatch.call('crossEditableZoom', this, map);
+            }
+            _lastWithinEditableZoom = withinEditableZoom;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         }
 
         if (geoScaleToZoom(k, TILESIZE) < _minzoom) {
@@ -1042,11 +1095,19 @@ export function rendererMap(context) {
 
 
     map.isInWideSelection = function() {
+<<<<<<< HEAD
         return !map.withinEditableZoom() && context.selectedIDs().length;
+=======
+        return !map.withinEditableZoom() && context.mode() && context.mode().id === 'select';
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     };
 
 
     map.editableDataEnabled = function(skipZoomCheck) {
+<<<<<<< HEAD
+=======
+        if (context.history().hasRestorableChanges()) return false;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         var layer = context.layers().layer('osm');
         if (!layer || !layer.enabled()) return false;

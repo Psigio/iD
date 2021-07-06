@@ -12,6 +12,7 @@ import { utilDetect } from '../util/detect';
 import { utilGetDimensions } from '../util/dimensions';
 
 import { uiAccount } from './account';
+import { uiAssistant } from './assistant';
 import { uiAttribution } from './attribution';
 import { uiContributors } from './contributors';
 import { uiEditMenu } from './edit_menu';
@@ -26,13 +27,14 @@ import { uiLoading } from './loading';
 import { uiMapInMap } from './map_in_map';
 import { uiNotice } from './notice';
 import { uiPhotoviewer } from './photoviewer';
-import { uiRestore } from './restore';
 import { uiScale } from './scale';
 import { uiShortcuts } from './shortcuts';
+<<<<<<< HEAD
 import { uiSidebar } from './sidebar';
 import { uiSourceSwitch } from './source_switch';
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 import { uiSpinner } from './spinner';
-import { uiSplash } from './splash';
 import { uiStatus } from './status';
 import { uiTooltip } from './tooltip';
 import { uiTopToolbar } from './top_toolbar';
@@ -136,6 +138,7 @@ export function uiInit(context) {
             .attr('id', 'ideditor-defs')
             .call(ui.svgDefs);
 
+<<<<<<< HEAD
         container
             .append('div')
             .attr('class', 'sidebar')
@@ -144,13 +147,27 @@ export function uiInit(context) {
         var content = container
             .append('div')
             .attr('class', 'main-content active');
+=======
+
+        var content = container
+            .append('div')
+            .attr('id', 'content')
+            .attr('class', context.history().hasRestorableChanges() ? 'inactive' : 'active');
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         // Top toolbar
         content
             .append('div')
+<<<<<<< HEAD
             .attr('class', 'top-toolbar-wrap')
             .append('div')
             .attr('class', 'top-toolbar fillD')
+=======
+            .attr('id', 'bar-wrap')
+            .append('div')
+            .attr('id', 'bar')
+            .attr('class', 'fillD')
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             .call(uiTopToolbar(context));
 
         content
@@ -267,11 +284,14 @@ export function uiInit(context) {
             .append('div')
             .attr('class', 'main-footer-wrap footer-show');
 
+<<<<<<< HEAD
         footerWrap
             .append('div')
             .attr('class', 'scale-block')
             .call(uiScale(context));
 
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         var aboutList = footerWrap
             .append('div')
             .attr('class', 'info-block')
@@ -330,6 +350,10 @@ export function uiInit(context) {
                 .call(uiAccount(context));
         }
 
+        footerWrap
+            .append('div')
+            .attr('id', 'scale-block')
+            .call(uiScale(context));
 
         // Setup map dimensions and move map to initial center/zoom.
         // This should happen after .main-content and toolbars exist.
@@ -342,6 +366,53 @@ export function uiInit(context) {
             map.centerZoom([0, 0], 2);
         }
 
+<<<<<<< HEAD
+=======
+
+        var overMap = content
+            .append('div')
+            .attr('class', 'over-map');
+
+        // Add panes
+        // This should happen after map is initialized, as some require surface()
+        var panes = overMap
+            .append('div')
+            .attr('class', 'map-panes');
+
+        panes
+            .call(background.renderPane)
+            .call(mapData.renderPane)
+            .call(issues.renderPane)
+            .call(help.renderPane);
+
+        ui.info = uiInfo(context);
+
+        // Add absolutely-positioned elements that sit on top of the map
+        // This should happen after the map is ready (center/zoom)
+        overMap
+            .call(uiMapInMap(context))
+            .call(ui.info)
+            .call(uiNotice(context));
+
+
+        overMap
+            .append('div')
+            .attr('id', 'photoviewer')
+            .classed('al', true)       // 'al'=left,  'ar'=right
+            .classed('hide', true)
+            .call(ui.photoviewer);
+
+        var assistantWrap = overMap
+            .append('div')
+            .attr('class', 'assistant-wrap');
+
+        ui.assistant = uiAssistant(context);
+
+        assistantWrap
+            .call(ui.assistant);
+
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         // Bind events
         window.onbeforeunload = function() {
             return context.save();
@@ -358,8 +429,12 @@ export function uiInit(context) {
 
         var panPixels = 80;
         context.keybinding()
+<<<<<<< HEAD
             .on('⌫', function(d3_event) { d3_event.preventDefault(); })
             .on([t('sidebar.key'), '`', '²', '@'], ui.sidebar.toggle)   // #5663, #6864 - common QWERTY, AZERTY
+=======
+            .on('⌫', function() { d3_event.preventDefault(); })
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             .on('←', pan([panPixels, 0]))
             .on('↑', pan([0, panPixels]))
             .on('→', pan([-panPixels, 0]))
@@ -420,12 +495,6 @@ export function uiInit(context) {
         context.enter(modeBrowse(context));
 
         if (!_initCounter++) {
-            if (!ui.hash.startWalkthrough) {
-                context.container()
-                    .call(uiSplash(context))
-                    .call(uiRestore(context));
-            }
-
             context.container()
                 .call(ui.shortcuts);
         }
@@ -500,11 +569,15 @@ export function uiInit(context) {
         return _lastPointerType;
     };
 
+<<<<<<< HEAD
     ui.svgDefs = svgDefs(context);
 
     ui.flash = uiFlash(context);
 
     ui.sidebar = uiSidebar(context);
+=======
+    ui.assistant = null;
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     ui.photoviewer = uiPhotoviewer(context);
 
@@ -513,11 +586,16 @@ export function uiInit(context) {
     ui.onResize = function(withPan) {
         var map = context.map();
 
-        // Recalc dimensions of map and sidebar.. (`true` = force recalc)
+        // Recalc dimensions of map and assistant.. (`true` = force recalc)
         // This will call `getBoundingClientRect` and trigger reflow,
         //  but the values will be cached for later use.
+<<<<<<< HEAD
         var mapDimensions = utilGetDimensions(context.container().select('.main-content'), true);
         utilGetDimensions(context.container().select('.sidebar'), true);
+=======
+        var mapDimensions = utilGetDimensions(d3_select('#content'), true);
+        utilGetDimensions(d3_select('.assistant'), true);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         if (withPan !== undefined) {
             map.redrawEnable(false);
@@ -578,8 +656,12 @@ export function uiInit(context) {
             .classed('active', false);
 
         if (showPane) {
+<<<<<<< HEAD
             hidePanes
                 .classed('shown', false)
+=======
+            shownPanes
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                 .classed('hide', true)
                 .style(side, '-500px');
 
@@ -589,8 +671,14 @@ export function uiInit(context) {
             showPane
                 .classed('shown', true)
                 .classed('hide', false);
+<<<<<<< HEAD
             if (hidePanes.empty()) {
                 showPane
+=======
+            if (shownPanes.empty()) {
+                showPane
+                    .classed('hide', false)
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                     .style(side, '-500px')
                     .transition()
                     .duration(200)
@@ -600,17 +688,25 @@ export function uiInit(context) {
                     .style(side, '0px');
             }
         } else {
+<<<<<<< HEAD
             hidePanes
                 .classed('shown', true)
+=======
+            shownPanes
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                 .classed('hide', false)
                 .style(side, '0px')
                 .transition()
                 .duration(200)
                 .style(side, '-500px')
                 .on('end', function() {
+<<<<<<< HEAD
                     d3_select(this)
                         .classed('shown', false)
                         .classed('hide', true);
+=======
+                    d3_select(this).classed('hide', true);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                 });
         }
     };

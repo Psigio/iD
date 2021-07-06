@@ -17,6 +17,7 @@ export function modeBrowse(context) {
         title: t('modes.browse.title'),
         description: t('modes.browse.description')
     };
+<<<<<<< HEAD
     var sidebar;
 
     var _selectBehavior;
@@ -28,6 +29,17 @@ export function modeBrowse(context) {
         _selectBehavior = val;
         return mode;
     };
+=======
+
+    var behaviors = [
+        behaviorPaste(context),
+        behaviorHover(context),
+        behaviorSelect(context),
+        behaviorLasso(context),
+        modeDragNode(context).behavior,
+        modeDragNote(context).behavior
+    ];
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 
     mode.enter = function() {
@@ -48,16 +60,11 @@ export function modeBrowse(context) {
         if (document.activeElement && document.activeElement.blur) {
             document.activeElement.blur();
         }
-
-        if (sidebar) {
-            context.ui().sidebar.show(sidebar);
-        } else {
-            context.ui().sidebar.select(null);
-        }
     };
 
 
     mode.exit = function() {
+<<<<<<< HEAD
         context.ui().sidebar.hover.cancel();
         _behaviors.forEach(context.uninstall);
 
@@ -71,6 +78,9 @@ export function modeBrowse(context) {
         if (!arguments.length) return sidebar;
         sidebar = _;
         return mode;
+=======
+        behaviors.forEach(context.uninstall);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     };
 
 

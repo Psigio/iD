@@ -5,6 +5,15 @@ import { prefs } from '../core/preferences';
 import { svgIcon, svgTagClasses } from '../svg';
 import { utilFunctor } from '../util';
 
+<<<<<<< HEAD
+=======
+export function uiPresetIcon(context) {
+    var preset, geometry, sizeClass = 'medium', pointMarker = true;
+
+    function isSmall() {
+        return sizeClass === 'small';
+    }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 export function uiPresetIcon() {
   let _preset;
@@ -16,10 +25,73 @@ export function uiPresetIcon() {
     return _sizeClass === 'small';
   }
 
+<<<<<<< HEAD
 
   function presetIcon(selection) {
     selection.each(render);
   }
+=======
+    function getIcon(p, geom) {
+        if (isSmall() && p.isFallback && p.isFallback())
+            return 'iD-icon-' + p.id;
+        else if (p.icon)
+            return p.icon;
+        else if (geom === 'line')
+            return 'iD-other-line';
+        else if (geom === 'vertex')
+            return p.isFallback() ? '' : 'temaki-vertex';
+        else if (isSmall() && geom === 'point')
+            return '';
+        else
+            return 'maki-marker-stroked';
+    }
+
+    function renderCategoryBorder(enter) {
+
+        var w = 40, h = 40;
+
+        enter = enter
+            .append('svg')
+            .attr('class', 'preset-icon-fill preset-icon-category-border')
+            .attr('width', w)
+            .attr('height', h)
+            .attr('viewBox', '0 0 ' + w + ' ' + h);
+
+        enter.append('path')
+            .attr('transform', 'translate(4.5, 5)')
+            .attr('d', 'M2.40138782,0.75 L0.75,3.22708173 L0.75,24 C0.75,25.7949254 2.20507456,27.25 4,27.25 L27,27.25 C28.7949254,27.25 30.25,25.7949254 30.25,24 L30.25,7 C30.25,5.20507456 28.7949254,3.75 27,3.75 L13.5986122,3.75 L11.5986122,0.75 L2.40138782,0.75 Z');
+    }
+
+    function renderPointBorder(enter) {
+        var w = 40, h = 40;
+        enter = enter
+            .append('svg')
+            .attr('class', 'preset-icon-fill preset-icon-point-border')
+            .attr('width', w)
+            .attr('height', h)
+            .attr('viewBox', '0 0 ' + w + ' ' + h);
+
+        enter.append('path')
+            .attr('transform', 'translate(11.5, 8)')
+            .attr('d', 'M 17,8 C 17,13 11,21 8.5,23.5 C 6,21 0,13 0,8 C 0,4 4,-0.5 8.5,-0.5 C 13,-0.5 17,4 17,8 z');
+    }
+
+    function renderCircleFill(fillEnter) {
+        var d = isSmall() ? 40 : 60;
+        var w = d, h = d, r = d/3;
+        fillEnter = fillEnter
+            .append('svg')
+            .attr('class', 'preset-icon-fill preset-icon-fill-vertex')
+            .attr('width', w)
+            .attr('height', h)
+            .attr('viewBox', '0 0 ' + w + ' ' + h);
+
+        fillEnter.append('circle')
+            .attr('cx', w/2)
+            .attr('cy', h/2)
+            .attr('r', r);
+    }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 
   function getIcon(p, geom) {
@@ -34,8 +106,130 @@ export function uiPresetIcon() {
 
   function renderPointBorder(container, drawPoint) {
 
+<<<<<<< HEAD
     let pointBorder = container.selectAll('.preset-icon-point-border')
       .data(drawPoint ? [0] : []);
+=======
+    var routeSegements = {
+        bicycle: ['highway/cycleway', 'highway/cycleway', 'highway/cycleway'],
+        bus: ['highway/unclassified', 'highway/secondary', 'highway/primary'],
+        detour: ['highway/tertiary', 'highway/residential', 'highway/unclassified'],
+        ferry: ['route/ferry', 'route/ferry', 'route/ferry'],
+        foot: ['highway/footway', 'highway/footway', 'highway/footway'],
+        hiking: ['highway/path', 'highway/path', 'highway/path'],
+        horse: ['highway/bridleway', 'highway/bridleway', 'highway/bridleway'],
+        light_rail: ['railway/light_rail', 'railway/light_rail', 'railway/light_rail'],
+        monorail: ['railway/monorail', 'railway/monorail', 'railway/monorail'],
+        pipeline: ['man_made/pipeline', 'man_made/pipeline', 'man_made/pipeline'],
+        piste: ['piste/downhill', 'piste/hike', 'piste/nordic'],
+        power: ['power/line', 'power/line', 'power/line'],
+        road: ['highway/secondary', 'highway/primary', 'highway/trunk'],
+        subway: ['railway/subway', 'railway/subway', 'railway/subway'],
+        train: ['railway/rail', 'railway/rail', 'railway/rail'],
+        tram: ['railway/tram', 'railway/tram', 'railway/tram'],
+        waterway: ['waterway/stream', 'waterway/stream', 'waterway/stream']
+    };
+
+    function render() {
+
+        var p = preset.apply(this, arguments);
+        var isFallback = isSmall() && p.isFallback && p.isFallback();
+        var geom = geometry ? geometry.apply(this, arguments) : null;
+        if (geom === 'relation' && p.tags && ((p.tags.type === 'route' && p.tags.route && routeSegements[p.tags.route]) || p.tags.type === 'waterway')) {
+            geom = 'route';
+        }
+        var imageURL = p.imageURL;
+        var picon = imageURL ? null : getIcon(p, geom);
+        var isMaki = picon && /^maki-/.test(picon);
+        var isTemaki = picon && /^temaki-/.test(picon);
+        var isFa = picon && /^fa[srb]-/.test(picon);
+        var isTnp = picon && /^tnp-/.test(picon);
+        var isiDIcon = picon && !(isMaki || isTemaki || isFa || isTnp);
+        var isCategory = !p.setTags;
+        var drawCategoryBorder = isCategory;
+        var drawPoint = geom === 'point' && !imageURL && (pointMarker || !picon) && !isFallback;
+        var drawVertex = picon !== null && geom === 'vertex' && (!isSmall() || !isFallback);
+        var drawLine = picon && geom === 'line' && !isFallback && !isCategory;
+        var drawArea = picon && geom === 'area' && !isFallback;
+        var drawRoute = picon && geom === 'route';
+        var isFramed = (drawCategoryBorder || drawPoint || drawVertex || drawArea || drawLine || drawRoute);
+
+        var tags = !isCategory ? p.setTags({}, geom) : {};
+        for (var k in tags) {
+            if (tags[k] === '*') {
+                tags[k] = 'yes';
+            }
+        }
+        var tagClasses = svgTagClasses().getClassesString(tags, '');
+
+        var selection = d3_select(this);
+
+        var container = selection.selectAll('.preset-icon-container')
+            .data([0]);
+
+        container = container.enter()
+            .append('div')
+            .attr('class', 'preset-icon-container ' + sizeClass)
+            .merge(container);
+
+        container.classed('fallback', isFallback);
+
+        var imageIcon = container.selectAll('img.image-icon')
+            .data(imageURL ? [0] : []);
+
+        imageIcon.exit()
+            .remove();
+
+        imageIcon = imageIcon.enter()
+            .append('img')
+            .attr('class', 'image-icon')
+            .merge(imageIcon);
+
+        imageIcon
+            .attr('src', imageURL);
+
+        var categoryBorder = container.selectAll('.preset-icon-category-border')
+            .data(drawCategoryBorder ? [0] : []);
+
+        categoryBorder.exit()
+            .remove();
+
+        var categoryBorderEnter = categoryBorder.enter();
+        renderCategoryBorder(categoryBorderEnter);
+        categoryBorder = categoryBorderEnter.merge(categoryBorder);
+
+        var pointBorder = container.selectAll('.preset-icon-point-border')
+            .data(drawPoint ? [0] : []);
+
+        pointBorder.exit()
+            .remove();
+
+        var pointBorderEnter = pointBorder.enter();
+        renderPointBorder(pointBorderEnter);
+        pointBorder = pointBorderEnter.merge(pointBorder);
+
+
+        var vertexFill = container.selectAll('.preset-icon-fill-vertex')
+            .data(drawVertex ? [0] : []);
+
+        vertexFill.exit()
+            .remove();
+
+        var vertexFillEnter = vertexFill.enter();
+        renderCircleFill(vertexFillEnter);
+        vertexFill = vertexFillEnter.merge(vertexFill);
+
+
+        var fill = container.selectAll('.preset-icon-fill-area')
+            .data(drawArea ? [0] : []);
+
+        fill.exit()
+            .remove();
+
+        var fillEnter = fill.enter();
+        renderSquareFill(fillEnter);
+        fill = fillEnter.merge(fill);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     pointBorder.exit()
       .remove();
@@ -419,8 +613,15 @@ export function uiPresetIcon() {
       }
     }
 
+<<<<<<< HEAD
     let tagClasses = svgTagClasses().getClassesString(tags, '');
     let selection = d3_select(this);
+=======
+        icon
+            .attr('class', 'preset-icon ' + (geom ? geom + '-geom ' : '') + (isCategory ? 'category' : ''))
+            .classed('framed', isFramed)
+            .classed('preset-icon-iD', isiDIcon);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
     let container = selection.selectAll('.preset-icon-container')
       .data([0]);
@@ -459,9 +660,20 @@ export function uiPresetIcon() {
   };
 
 
+<<<<<<< HEAD
   presetIcon.sizeClass = function(val) {
     if (!arguments.length) return _sizeClass;
     _sizeClass = val;
+=======
+
+    presetIcon.pointMarker = function(val) {
+        if (!arguments.length) return pointMarker;
+        pointMarker = val;
+        return presetIcon;
+    };
+
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     return presetIcon;
   };
 

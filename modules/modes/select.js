@@ -21,12 +21,25 @@ import { modeDragNode } from './drag_node';
 import { modeDragNote } from './drag_note';
 import { osmNode, osmWay } from '../osm';
 import * as Operations from '../operations/index';
+<<<<<<< HEAD
 import { uiCmd } from '../ui/cmd';
 import {
     utilArrayIntersection, utilArrayUnion, utilDeepMemberSelector, utilEntityOrDeepMemberSelector,
     utilEntitySelector, utilKeybinding, utilTotalExtent, utilGetAllNodes
 } from '../util';
 
+=======
+import { uiEditMenu } from '../ui/edit_menu';
+import { uiCmd } from '../ui/cmd';
+import {
+    utilArrayIntersection, utilEntityOrDeepMemberSelector,
+    utilEntitySelector, utilDeepMemberSelector, utilKeybinding
+} from '../util';
+
+
+var _relatedParent;
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
 export function modeSelect(context, selectedIDs) {
     var mode = {
@@ -130,7 +143,13 @@ export function modeSelect(context, selectedIDs) {
             return _focusedParentWayId;
         }
 
+<<<<<<< HEAD
         return parentIds.length ? parentIds[0] : null;
+=======
+    function toggleMenu() {
+        positionMenu();
+        showMenu();
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     }
 
 
@@ -143,6 +162,24 @@ export function modeSelect(context, selectedIDs) {
 
     mode.zoomToSelected = function() {
         context.map().zoomToEase(selectedEntities());
+<<<<<<< HEAD
+=======
+    };
+
+
+    mode.reselect = function() {
+        if (!checkSelectedIDs()) return;
+
+        var surfaceNode = context.surface().node();
+        if (surfaceNode.focus) {   // FF doesn't support it
+            surfaceNode.focus();
+        }
+
+        positionMenu();
+        if (!_suppressMenu) {
+            showMenu();
+        }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     };
 
 
@@ -166,6 +203,35 @@ export function modeSelect(context, selectedIDs) {
         return mode;
     };
 
+<<<<<<< HEAD
+=======
+    var operations = [];
+
+    mode.operations = function() {
+        return operations;
+    };
+
+    function scheduleMissingMemberDownload() {
+        var missingMemberIDs = new Set();
+        selectedIDs.forEach(function(id) {
+            var entity = context.hasEntity(id);
+            if (!entity || entity.type !== 'relation') return;
+
+            entity.members.forEach(function(member) {
+                if (!context.hasEntity(member.id)) {
+                    missingMemberIDs.add(member.id);
+                }
+            });
+        });
+
+        if (missingMemberIDs.size) {
+            var missingMemberIDsArray = Array.from(missingMemberIDs)
+                .slice(0, 150); // limit number of members downloaded at once to avoid blocking iD
+            context.loadEntities(missingMemberIDsArray);
+        }
+    }
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     function loadOperations() {
 
         _operations.forEach(function(operation) {
@@ -174,6 +240,7 @@ export function modeSelect(context, selectedIDs) {
             }
         });
 
+<<<<<<< HEAD
         _operations = Object.values(Operations)
             .map(function(o) { return o(context, selectedIDs); })
             .filter(function(o) { return o.id !== 'delete' && o.id !== 'downgrade' && o.id !== 'copy'; })
@@ -185,6 +252,17 @@ export function modeSelect(context, selectedIDs) {
             ]).filter(function(operation) {
                 return operation.available();
             });
+=======
+        operations = Object.values(Operations)
+            .map(function(o) { return o(selectedIDs, context); })
+            .filter(function(o) { return o.available() && o.id !== 'delete' && o.id !== 'downgrade'; });
+
+        var downgradeOperation = Operations.operationDowngrade(selectedIDs, context);
+        // don't allow delete if downgrade is available
+        var lastOperation = !context.inIntro() && downgradeOperation.available() ? downgradeOperation : Operations.operationDelete(selectedIDs, context);
+
+        operations.push(lastOperation);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         _operations.forEach(function(operation) {
             if (operation.behavior) {
@@ -192,8 +270,13 @@ export function modeSelect(context, selectedIDs) {
             }
         });
 
+<<<<<<< HEAD
         // remove any displayed menu
         context.ui().closeEditMenu();
+=======
+        editMenu = uiEditMenu(context, operations);
+
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     }
 
     mode.operations = function() {
@@ -204,6 +287,10 @@ export function modeSelect(context, selectedIDs) {
     mode.enter = function() {
         if (!checkSelectedIDs()) return;
 
+        // if this selection includes relations, fetch their members
+        scheduleMissingMemberDownload();
+
+        // ensure that selected features are rendered even if they would otherwise be hidden
         context.features().forceVisible(selectedIDs);
 
         _modeDragNode.restoreSelectedIDs(selectedIDs);
@@ -250,9 +337,12 @@ export function modeSelect(context, selectedIDs) {
         d3_select(document)
             .call(keybinding);
 
+<<<<<<< HEAD
         context.ui().sidebar
             .select(selectedIDs, _newFeature);
 
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
         context.history()
             .on('change.select', function() {
                 loadOperations();
@@ -263,11 +353,17 @@ export function modeSelect(context, selectedIDs) {
             .on('redone.select', checkSelectedIDs);
 
         context.map()
+<<<<<<< HEAD
             .on('drawn.select', selectElements)
             .on('crossEditableZoom.select', function() {
                 selectElements();
                 _breatheBehavior.restartIfNeeded(context.surface());
             });
+=======
+            .on('move.select', closeMenu)
+            .on('drawn.select', selectElements)
+            .on('crossEditableZoom.select', selectElements);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         context.map().doubleUpHandler()
             .on('doubleUp.modeSelect', didDoubleUp);
@@ -385,7 +481,11 @@ export function modeSelect(context, selectedIDs) {
         }
 
 
+<<<<<<< HEAD
         function didDoubleUp(d3_event, loc) {
+=======
+        function dblclick() {
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
             if (!context.map().withinEditableZoom()) return;
 
             var target = d3_select(d3_event.target);
@@ -417,11 +517,17 @@ export function modeSelect(context, selectedIDs) {
 
             var surface = context.surface();
 
+<<<<<<< HEAD
             surface.selectAll('.selected-member')
                 .classed('selected-member', false);
 
             surface.selectAll('.selected')
                 .classed('selected', false);
+=======
+            if (entity && context.geometry(entity.id) === 'relation') {
+                _suppressMenu = true;
+            }
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
             surface.selectAll('.related')
                 .classed('related', false);
@@ -433,6 +539,7 @@ export function modeSelect(context, selectedIDs) {
                     .classed('related', true);
             }
 
+<<<<<<< HEAD
             if (context.map().withinEditableZoom()) {
                 // Apply selection styling if not in wide selection
 
@@ -441,6 +548,30 @@ export function modeSelect(context, selectedIDs) {
                     .classed('selected-member', true);
                 surface
                     .selectAll(utilEntityOrDeepMemberSelector(selectedIDs, context.graph()))
+=======
+            // Don't highlight selected features past the editable zoom
+            if (!context.map().withinEditableZoom()) {
+                surface.selectAll('.selected').classed('selected', false);
+                surface.selectAll('.selected-member').classed('selected-member', false);
+                return;
+            }
+
+            var selection = context.surface()
+                .selectAll(utilEntityOrDeepMemberSelector(selectedIDs, context.graph()));
+
+            if (selection.empty()) {
+                // Return to browse mode if selected DOM elements have
+                // disappeared because the user moved them out of view..
+                var source = d3_event && d3_event.type === 'zoom' && d3_event.sourceEvent;
+                if (drawn && source && (source.type === 'mousemove' || source.type === 'touchmove')) {
+                    context.enter(modeBrowse(context));
+                }
+            } else {
+                context.surface()
+                    .selectAll(utilDeepMemberSelector(selectedIDs, context.graph(), true /* skipMultipolgonMembers */))
+                    .classed('selected-member', true);
+                selection
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
                     .classed('selected', true);
             }
 
@@ -631,6 +762,14 @@ export function modeSelect(context, selectedIDs) {
             .classed('selected-member', false);
 
         surface
+            .selectAll('.selected-member')
+            .classed('selected-member', false);
+
+        surface
+            .selectAll('.selected-member')
+            .classed('selected-member', false);
+
+        surface
             .selectAll('.selected')
             .classed('selected', false);
 
@@ -643,7 +782,6 @@ export function modeSelect(context, selectedIDs) {
             .classed('related', false);
 
         context.map().on('drawn.select', null);
-        context.ui().sidebar.hide();
         context.features().forceVisible([]);
 
         var entity = singular();

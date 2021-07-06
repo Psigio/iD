@@ -15,7 +15,6 @@ import { geoExtent } from '../geo';
 import { modeBrowse } from './browse';
 import { modeDragNode } from './drag_node';
 import { modeDragNote } from './drag_note';
-import { uiDataEditor } from '../ui/data_editor';
 import { utilKeybinding } from '../util';
 
 
@@ -26,7 +25,6 @@ export function modeSelectData(context, selectedDatum) {
     };
 
     var keybinding = utilKeybinding('select-data');
-    var dataEditor = uiDataEditor(context);
 
     var behaviors = [
         behaviorBreathe(context),
@@ -60,6 +58,9 @@ export function modeSelectData(context, selectedDatum) {
         context.enter(modeBrowse(context));
     }
 
+    mode.selectedDatum = function() {
+        return selectedDatum;
+    };
 
     mode.zoomToSelected = function() {
         var extent = geoExtent(d3_geoBounds(selectedDatum));
@@ -79,13 +80,6 @@ export function modeSelectData(context, selectedDatum) {
 
         selectData();
 
-        var sidebar = context.ui().sidebar;
-        sidebar.show(dataEditor.datum(selectedDatum));
-
-        // expand the sidebar, avoid obscuring the data if needed
-        var extent = geoExtent(d3_geoBounds(selectedDatum));
-        sidebar.expand(sidebar.intersects(extent));
-
         context.map()
             .on('drawn.select-data', selectData);
     };
@@ -103,9 +97,6 @@ export function modeSelectData(context, selectedDatum) {
 
         context.map()
             .on('drawn.select-data', null);
-
-        context.ui().sidebar
-            .hide();
     };
 
 

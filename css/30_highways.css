@@ -402,6 +402,12 @@ path.line.casing.tag-road {
 }
 
 /* service roads */
+<<<<<<< HEAD
+=======
+.preset-icon .icon.tag-highway-service {
+    color: #999;
+}
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 path.line.stroke.tag-highway-service,
 path.line.stroke.tag-service {
     stroke: #fff;

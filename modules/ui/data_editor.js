@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { t } from '../core/localizer';
 import { modeBrowse } from '../modes/browse';
 import { svgIcon } from '../svg/icon';
@@ -11,11 +12,19 @@ export function uiDataEditor(context) {
     var rawTagEditor = uiSectionRawTagEditor('custom-data-tag-editor', context)
         .expandedByDefault(true)
         .readOnlyTags([/./]);
+=======
+
+import { uiRawTagEditor } from './raw_tag_editor';
+
+export function uiDataEditor(context) {
+    var rawTagEditor = uiRawTagEditor(context);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
     var _datum;
 
 
     function dataEditor(selection) {
 
+<<<<<<< HEAD
         var header = selection.selectAll('.header')
             .data([0]);
 
@@ -35,13 +44,14 @@ export function uiDataEditor(context) {
             .append('h3')
             .html(t.html('map_data.title'));
 
-
-        var body = selection.selectAll('.body')
+=======
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
+        var body = selection.selectAll('.inspector-body')
             .data([0]);
 
         body = body.enter()
             .append('div')
-            .attr('class', 'body')
+            .attr('class', 'inspector-body sep-top')
             .merge(body);
 
         var editor = body.selectAll('.data-editor')
@@ -49,10 +59,14 @@ export function uiDataEditor(context) {
 
         // enter/update
         editor.enter()
+<<<<<<< HEAD
             .append('div')
             .attr('class', 'modal-section data-editor')
             .merge(editor)
             .call(dataHeader.datum(_datum));
+=======
+            .merge(editor);
+>>>>>>> af4ea2c4ddd394e18be57c4998a7860f8e535444
 
         var rte = body.selectAll('.raw-tag-editor')
             .data([0]);
